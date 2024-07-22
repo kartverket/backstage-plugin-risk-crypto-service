@@ -1,0 +1,6 @@
+services:
+  crypto-service:
+    build: .
+    ports:
+      - "8080:8081"
+
