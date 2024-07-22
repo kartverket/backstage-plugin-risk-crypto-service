@@ -27,10 +27,10 @@ class CryptoController(
 
     @GetMapping("/encrypt")
     fun encrypt(
-        text: String,
-        config: String,
-        gcpAccessToken: String,
-        riScId: String
+        text: String, // "hei: sveis!" validere korrekt format!
+        config: String, // hva trengs
+        gcpAccessToken: String, // kan simulere lokalt
+        riScId: String //
     ): ResponseEntity<String> {
 
         val encryptedString = encryptionService.encrypt(text, config, GCPAccessToken(gcpAccessToken), riScId)
