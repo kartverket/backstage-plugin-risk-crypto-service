@@ -1,7 +1,11 @@
 package crypto_service.service
 
+import crypto_service.exception.SopsEncryptionException
 import crypto_service.model.GCPAccessToken
+import crypto_service.model.sensor
 import org.springframework.stereotype.Service
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 @Service
 class EncryptionService {
@@ -19,8 +23,15 @@ class EncryptionService {
                 .command(toEncryptionCommand(config, gcpAccessToken.value))
                 .start()
                 .run {
-                    "Encrypted!"
-                    // TODO implement actual encryption, use SOPS.decrypt form backstage backend
+                    outputStream.buffered().also { it.write(text.toByteArray()) }.close()
+                    val result = BufferedReader(InputStreamReader(inputStream)).readText()
+                    when (waitFor()) {
+                        EXECUTION_STATUS_OK -> result
+                        else -> throw SopsEncryptionException(
+                            message = "Failed when encrypting RiSc with ID: $riScId by running sops command: ${toEncryptionCommand(config, gcpAccessToken.sensor().value)} with error message: $result",
+                            riScId = riScId
+                        )
+                    }
                 }
         } catch (e: Exception) {
             throw e
