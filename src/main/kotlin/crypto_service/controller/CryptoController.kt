@@ -5,6 +5,8 @@ import crypto_service.service.DecryptionService
 import crypto_service.service.EncryptionService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
@@ -30,16 +32,36 @@ class CryptoController(
 
     @GetMapping("/encrypt")
     fun encrypt(
-        text: String, // "hei: sveis!" validere korrekt format!
-        config: String, // hva trengs
-        gcpAccessToken: String, // kan simulere lokalt
-        riScId: String //
+        text: String,
+        config: String,
+        gcpAccessToken: String,
+        riScId: String
     ): ResponseEntity<String> {
 
+        // Hva skjer om decodingen feiler?
         val urlDecodedText = URLDecoder.decode(text, StandardCharsets.UTF_8.toString())
 
         val encryptedString = encryptionService.encrypt(urlDecodedText, config, GCPAccessToken(gcpAccessToken), riScId)
 
+        return ResponseEntity.ok().body(encryptedString)
+    }
+
+//    data class EncryptionRequest(
+//        val text: String,
+//        val config: String,
+//        val gcpAccessToken: String,
+//        val riScId: String
+//    )
+
+    @PostMapping("/encryptPost")
+    fun encryptPost(
+        @RequestBody text: String,
+        config: String,
+        gcpAccessToken: String,
+        riScId: String
+    ): ResponseEntity<String> {
+        val urlDecodedText = URLDecoder.decode(text, StandardCharsets.UTF_8.toString())
+        val encryptedString = encryptionService.encrypt(urlDecodedText, config, GCPAccessToken(gcpAccessToken), riScId)
         return ResponseEntity.ok().body(encryptedString)
     }
 }
