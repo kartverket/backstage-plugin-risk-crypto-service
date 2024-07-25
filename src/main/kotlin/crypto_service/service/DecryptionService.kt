@@ -9,7 +9,7 @@ import java.io.InputStreamReader
 
 @Service
 class DecryptionService(
-    @Value("\${sops.ageKey}") val ageKey: String
+    @Value("\${sops.age-key}") val ageKey: String
 ) {
 
     private val processBuilder = ProcessBuilder().redirectErrorStream(true)
