@@ -22,11 +22,5 @@ RUN if [ "$TARGETARCH" = "amd64" ]; then \
 
 COPY --from=build /build/libs/*.jar /app/backend.jar
 
-RUN adduser --uid 150 --disabled-password --gecos "" user && \
-    chown -R user:user /app /usr/local/bin /app/logs /app/tmp
-
-# Bytt til non-root user
-USER user
-
 EXPOSE 8080 8081
 ENTRYPOINT ["java", "-jar", "/app/backend.jar"]
