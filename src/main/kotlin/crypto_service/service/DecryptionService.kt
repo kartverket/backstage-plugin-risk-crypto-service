@@ -1,25 +1,38 @@
 package crypto_service.service
 
+import crypto_service.exception.SOPSDecryptionException
 import crypto_service.model.GCPAccessToken
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 @Service
-class DecryptionService {
+class DecryptionService(
+    @Value("\${sops.ageKey}") val ageKey: String
+) {
 
     private val processBuilder = ProcessBuilder().redirectErrorStream(true)
 
     fun decrypt(
         ciphertext: String,
         gcpAccessToken: GCPAccessToken,
-        agePrivateKey: String,
     ): String {
-
         return processBuilder
-            .command(toDecryptionCommand(gcpAccessToken.value, agePrivateKey))
+            .command(toDecryptionCommand(gcpAccessToken.value, ageKey))
             .start()
             .run {
-                "Decrypted!"
-                // TODO implement actual decryption, use SOPS.decrypt form backstage backend
+                outputStream.buffered().also { it.write(ciphertext.toByteArray()) }.close()
+                val result = BufferedReader(InputStreamReader(inputStream)).readText()
+                when (waitFor()) {
+                    EXECUTION_STATUS_OK -> result
+
+                    else -> {
+                        throw SOPSDecryptionException(
+                            message = result,
+                        )
+                    }
+                }
             }
     }
 
