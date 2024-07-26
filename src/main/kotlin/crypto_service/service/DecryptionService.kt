@@ -2,38 +2,46 @@ package crypto_service.service
 
 import crypto_service.exception.SOPSDecryptionException
 import crypto_service.model.GCPAccessToken
-import org.springframework.beans.factory.annotation.Value
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
 @Service
 class DecryptionService(
-    @Value("\${sops.age-key}") val ageKey: String
 ) {
 
     private val processBuilder = ProcessBuilder().redirectErrorStream(true)
 
+    private val logger = LoggerFactory.getLogger(DecryptionService::class.java)
+
     fun decrypt(
         ciphertext: String,
         gcpAccessToken: GCPAccessToken,
+        ageKey: String,
     ): String {
-        return processBuilder
-            .command(toDecryptionCommand(gcpAccessToken.value, ageKey))
-            .start()
-            .run {
-                outputStream.buffered().also { it.write(ciphertext.toByteArray()) }.close()
-                val result = BufferedReader(InputStreamReader(inputStream)).readText()
-                when (waitFor()) {
-                    EXECUTION_STATUS_OK -> result
+        return try {
+            processBuilder
+                .command(toDecryptionCommand(gcpAccessToken.value, ageKey))
+                .start()
+                .run {
+                    outputStream.buffered().also { it.write(ciphertext.toByteArray()) }.close()
+                    val result = BufferedReader(InputStreamReader(inputStream)).readText()
+                    when (waitFor()) {
+                        EXECUTION_STATUS_OK -> result
 
-                    else -> {
-                        throw SOPSDecryptionException(
-                            message = result,
-                        )
+                        else -> {
+                            logger.error("IOException from decrypting yaml with error code ${exitValue()}: $result")
+                            throw SOPSDecryptionException(
+                                message = result,
+                            )
+                        }
                     }
                 }
-            }
+        } catch (e: Exception) {
+            logger.error("Decrypting failed.", e)
+            throw e
+        }
     }
 
     private fun toDecryptionCommand(
