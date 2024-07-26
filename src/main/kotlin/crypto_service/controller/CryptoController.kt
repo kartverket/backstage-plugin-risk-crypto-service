@@ -33,18 +33,18 @@ class CryptoController(
     @GetMapping("/encrypt")
     fun encrypt(
         text: String,
-        _config: String,
+        config: String,
         gcpAccessToken: String,
         riScId: String
     ): ResponseEntity<String> {
         val urlDecodedText = URLDecoder.decode(text, StandardCharsets.UTF_8.toString())
-        val encryptedString = encryptionService.encrypt(urlDecodedText, _config, GCPAccessToken(gcpAccessToken), riScId)
+        val encryptedString = encryptionService.encrypt(urlDecodedText, config, GCPAccessToken(gcpAccessToken), riScId)
 
         return ResponseEntity.ok().body(encryptedString)
     }
 
 
-    @PostMapping("/encryptPost")
+    @PostMapping("/encrypt")
     fun encryptPost(
         @RequestBody request: EncryptionRequest
     ): ResponseEntity<String> {
