@@ -8,8 +8,7 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 
 @Service
-class DecryptionService(
-) {
+class DecryptionService {
 
     private val processBuilder = ProcessBuilder().redirectErrorStream(true)
 
@@ -18,11 +17,11 @@ class DecryptionService(
     fun decrypt(
         ciphertext: String,
         gcpAccessToken: GCPAccessToken,
-        ageKey: String,
+        agePrivateKey: String,
     ): String {
         return try {
             processBuilder
-                .command(toDecryptionCommand(gcpAccessToken.value, ageKey))
+                .command(toDecryptionCommand(gcpAccessToken.value, agePrivateKey))
                 .start()
                 .run {
                     outputStream.buffered().also { it.write(ciphertext.toByteArray()) }.close()

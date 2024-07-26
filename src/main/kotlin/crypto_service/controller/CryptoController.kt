@@ -22,11 +22,11 @@ class CryptoController(
     @GetMapping("/decrypt")
     fun decrypt(
         @RequestHeader gcpAccessToken: String,
-        @RequestHeader ageKey: String,
+        @RequestHeader agePrivateKey: String,
         @RequestBody cipherText: String,
     ): ResponseEntity<String> {
 
-        val decryptedString = decryptionService.decrypt(cipherText, GCPAccessToken(gcpAccessToken), ageKey)
+        val decryptedString = decryptionService.decrypt(cipherText, GCPAccessToken(gcpAccessToken), agePrivateKey)
 
         return ResponseEntity.ok().body(decryptedString)
     }
