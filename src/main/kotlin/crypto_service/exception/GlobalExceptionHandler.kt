@@ -1,5 +1,6 @@
 package crypto_service.exception
 
+import crypto_service.exception.exceptions.SopsEncryptionException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.ErrorResponse

@@ -1,6 +1,6 @@
 package crypto_service.service
 
-import crypto_service.exception.SopsEncryptionException
+import crypto_service.exception.exceptions.SopsEncryptionException
 import crypto_service.model.GCPAccessToken
 import crypto_service.model.sensor
 import org.springframework.stereotype.Service
@@ -28,12 +28,18 @@ class EncryptionService {
                     when (waitFor()) {
                         EXECUTION_STATUS_OK -> result
                         else -> throw SopsEncryptionException(
-                            message = "Failed when encrypting RiSc with ID: $riScId by running sops command: ${toEncryptionCommand(config, gcpAccessToken.sensor().value)} with error message: $result",
+                            message = "Failed when encrypting RiSc with ID: $riScId by running sops command: ${
+                                toEncryptionCommand(
+                                    config,
+                                    gcpAccessToken.sensor().value
+                                )
+                            } with error message: $result",
                             riScId = riScId
                         )
                     }
                 }
         } catch (e: Exception) {
+            print(e.message)
             throw e
         }
     }
@@ -41,6 +47,9 @@ class EncryptionService {
     private fun toEncryptionCommand(
         config: String,
         accessToken: String,
-    ): List<String> = sopsCmd + encrypt + inputTypeJson + outputTypeYaml + encryptConfig + config + inputFile + gcpAccessToken(accessToken)
+    ): List<String> =
+        sopsCmd + encrypt + inputTypeJson + outputTypeYaml + encryptConfig + config + inputFile + gcpAccessToken(
+            accessToken
+        )
 
 }
