@@ -1,6 +1,6 @@
 package crypto_service.service
 
-import crypto_service.exception.SOPSDecryptionException
+import crypto_service.exception.exceptions.SOPSDecryptionException
 import crypto_service.model.GCPAccessToken
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
