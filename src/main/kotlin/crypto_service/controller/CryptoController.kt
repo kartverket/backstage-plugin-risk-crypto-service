@@ -1,5 +1,6 @@
 package crypto_service.controller
 
+import crypto_service.controller.models.EncryptionRequest
 import crypto_service.model.GCPAccessToken
 import crypto_service.service.DecryptionService
 import crypto_service.service.EncryptionService
@@ -37,28 +38,23 @@ class CryptoController(
     ): ResponseEntity<String> {
         // Hva skjer om decodingen feiler?
         val urlDecodedText = URLDecoder.decode(text, StandardCharsets.UTF_8.toString())
-
         val encryptedString = encryptionService.encrypt(urlDecodedText, config, GCPAccessToken(gcpAccessToken), riScId)
 
         return ResponseEntity.ok().body(encryptedString)
     }
 
-//    data class EncryptionRequest(
-//        val text: String,
-//        val config: String,
-//        val gcpAccessToken: String,
-//        val riScId: String
-//    )
 
-    @PostMapping("/encryptPost")
+    @PostMapping("/encrypt")
     fun encryptPost(
-        @RequestBody text: String,
-        config: String,
-        gcpAccessToken: String,
-        riScId: String,
+        @RequestBody request: EncryptionRequest
     ): ResponseEntity<String> {
-        val urlDecodedText = URLDecoder.decode(text, StandardCharsets.UTF_8.toString())
-        val encryptedString = encryptionService.encrypt(urlDecodedText, config, GCPAccessToken(gcpAccessToken), riScId)
+        val encryptedString = encryptionService.encrypt(
+            request.text,
+            request.config,
+            GCPAccessToken(request.gcpAccessToken),
+            request.riScId
+        )
+
         return ResponseEntity.ok().body(encryptedString)
     }
 }
