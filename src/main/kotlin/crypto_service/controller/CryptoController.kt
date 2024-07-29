@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RestController
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
@@ -21,11 +22,12 @@ class CryptoController(
 
     @GetMapping("/decrypt")
     fun decrypt(
-        ciphertext: String,
-        gcpAccessToken: String,
-        agePrivateKey: String
+        @RequestHeader gcpAccessToken: String,
+        @RequestHeader agePrivateKey: String,
+        @RequestBody cipherText: String,
     ): ResponseEntity<String> {
-        val decryptedString = decryptionService.decrypt(ciphertext, GCPAccessToken(gcpAccessToken), agePrivateKey)
+
+        val decryptedString = decryptionService.decrypt(cipherText, GCPAccessToken(gcpAccessToken), agePrivateKey)
 
         return ResponseEntity.ok().body(decryptedString)
     }
