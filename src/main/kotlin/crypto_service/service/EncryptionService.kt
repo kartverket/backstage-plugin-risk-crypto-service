@@ -9,14 +9,13 @@ import java.io.InputStreamReader
 
 @Service
 class EncryptionService {
-
     private val processBuilder = ProcessBuilder().redirectErrorStream(true)
 
     fun encrypt(
         text: String,
         config: String,
         gcpAccessToken: GCPAccessToken,
-        riScId: String
+        riScId: String,
     ): String {
         return try {
             processBuilder
@@ -28,8 +27,13 @@ class EncryptionService {
                     when (waitFor()) {
                         EXECUTION_STATUS_OK -> result
                         else -> throw SopsEncryptionException(
-                            message = "Failed when encrypting RiSc with ID: $riScId by running sops command: ${toEncryptionCommand(config, gcpAccessToken.sensor().value)} with error message: $result",
-                            riScId = riScId
+                            message = "Failed when encrypting RiSc with ID: $riScId by running sops command: ${
+                                toEncryptionCommand(
+                                    config,
+                                    gcpAccessToken.sensor().value,
+                                )
+                            } with error message: $result",
+                            riScId = riScId,
                         )
                     }
                 }
@@ -41,6 +45,9 @@ class EncryptionService {
     private fun toEncryptionCommand(
         config: String,
         accessToken: String,
-    ): List<String> = sopsCmd + encrypt + inputTypeJson + outputTypeYaml + encryptConfig + config + inputFile + gcpAccessToken(accessToken)
-
+    ): List<String> =
+        sopsCmd + encrypt + inputTypeJson + outputTypeYaml + encryptConfig + config + inputFile +
+            gcpAccessToken(
+                accessToken,
+            )
 }

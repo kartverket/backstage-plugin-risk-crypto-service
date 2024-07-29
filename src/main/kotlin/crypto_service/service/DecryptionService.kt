@@ -9,7 +9,6 @@ import java.io.InputStreamReader
 
 @Service
 class DecryptionService {
-
     private val processBuilder = ProcessBuilder().redirectErrorStream(true)
 
     private val logger = LoggerFactory.getLogger(DecryptionService::class.java)
@@ -45,10 +44,10 @@ class DecryptionService {
 
     private fun toDecryptionCommand(
         accessToken: String,
-        sopsPrivateKey: String
+        sopsPrivateKey: String,
     ): List<String> =
-        sopsCmd + ageSecret(sopsPrivateKey) + decrypt + inputTypeYaml + outputTypeJson + inputFile + gcpAccessToken(
-            accessToken
-        )
-
+        sopsCmd + ageSecret(sopsPrivateKey) + decrypt + inputTypeYaml + outputTypeJson + inputFile +
+            gcpAccessToken(
+                accessToken,
+            )
 }

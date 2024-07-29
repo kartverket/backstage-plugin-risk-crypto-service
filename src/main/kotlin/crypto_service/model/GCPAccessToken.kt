@@ -2,6 +2,7 @@ package crypto_service.model
 
 data class GCPAccessToken(val value: String)
 
-fun GCPAccessToken.sensor() = GCPAccessToken(
-    value = value.slice(IntRange(0, 3))+"****",
-)
+fun GCPAccessToken.sensor() =
+    GCPAccessToken(
+        value = value.slice(IntRange(0, 3)) + "****",
+    )

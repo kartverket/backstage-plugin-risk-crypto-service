@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class CryptoServiceApplication
 
 fun main(args: Array<String>) {
-	runApplication<CryptoServiceApplication>(*args)
+    runApplication<CryptoServiceApplication>(*args)
 }
