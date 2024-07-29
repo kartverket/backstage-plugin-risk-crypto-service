@@ -43,17 +43,17 @@ class CryptoController(
         return ResponseEntity.ok().body(encryptedString)
     }
 
-
     @PostMapping("/encrypt")
     fun encryptPost(
-        @RequestBody request: EncryptionRequest
+        @RequestBody request: EncryptionRequest,
     ): ResponseEntity<String> {
-        val encryptedString = encryptionService.encrypt(
-            request.text,
-            request.config,
-            GCPAccessToken(request.gcpAccessToken),
-            request.riScId
-        )
+        val encryptedString =
+            encryptionService.encrypt(
+                request.text,
+                request.config,
+                GCPAccessToken(request.gcpAccessToken),
+                request.riScId,
+            )
 
         return ResponseEntity.ok().body(encryptedString)
     }

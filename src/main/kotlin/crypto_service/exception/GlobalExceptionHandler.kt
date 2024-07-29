@@ -13,7 +13,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @ControllerAdvice
 class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
-
     @ExceptionHandler
     fun handleUncaughtException(
         ex: Exception,

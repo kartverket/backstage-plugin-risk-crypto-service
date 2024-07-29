@@ -3,11 +3,10 @@ package crypto_service.service
 import crypto_service.exception.exceptions.SopsEncryptionException
 import crypto_service.model.GCPAccessToken
 import crypto_service.model.sensor
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import org.slf4j.LoggerFactory
-
 
 @Service
 class EncryptionService {
@@ -36,10 +35,10 @@ class EncryptionService {
                                 message = "Failed when encrypting RiSc with ID: $riScId by running sops command: ${
                                     toEncryptionCommand(
                                         config,
-                                        gcpAccessToken.sensor().value
+                                        gcpAccessToken.sensor().value,
                                     )
                                 } with error message: $result",
-                                riScId = riScId
+                                riScId = riScId,
                             )
                         }
                     }
