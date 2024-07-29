@@ -12,13 +12,15 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @ControllerAdvice
 class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
-
     @ExceptionHandler
-    fun handleUncaughtException(ex: Exception, request: WebRequest): ResponseEntity<ErrorResponse> {
+    fun handleUncaughtException(
+        ex: Exception,
+        request: WebRequest,
+    ): ResponseEntity<ErrorResponse> {
         logger.warn(ex.message, ex)
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(ErrorResponse.create(ex, HttpStatus.INTERNAL_SERVER_ERROR, "Exception message: ${ex.message}" ))
+            .body(ErrorResponse.create(ex, HttpStatus.INTERNAL_SERVER_ERROR, "Exception message: ${ex.message}"))
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -28,6 +30,14 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(ErrorResponse.create(ex, HttpStatus.INTERNAL_SERVER_ERROR, "Exception message: ${ex.message}"))
+    }
 
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(SOPSDecryptionException::class)
+    fun handleSopsDecryptionException(ex: SOPSDecryptionException): ResponseEntity<ErrorResponse> {
+        logger.error(ex.message, ex)
+        return ResponseEntity
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(ErrorResponse.create(ex, HttpStatus.INTERNAL_SERVER_ERROR, "Exception message: ${ex.message}"))
     }
 }
