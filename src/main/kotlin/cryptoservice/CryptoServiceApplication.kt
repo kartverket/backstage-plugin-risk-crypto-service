@@ -1,4 +1,4 @@
-package crypto_service
+package cryptoservice
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

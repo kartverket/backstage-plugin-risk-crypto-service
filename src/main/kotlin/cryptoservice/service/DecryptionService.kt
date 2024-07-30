@@ -1,7 +1,7 @@
-package crypto_service.service
+package cryptoservice.service
 
-import crypto_service.exception.exceptions.SOPSDecryptionException
-import crypto_service.model.GCPAccessToken
+import cryptoservice.exception.exceptions.SOPSDecryptionException
+import cryptoservice.model.GCPAccessToken
 import org.springframework.stereotype.Service
 import java.io.BufferedReader
 import java.io.InputStreamReader
