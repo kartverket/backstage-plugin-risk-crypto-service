@@ -1,8 +1,8 @@
-package crypto_service.service
+package cryptoservice.service
 
-import crypto_service.exception.exceptions.SopsEncryptionException
-import crypto_service.model.GCPAccessToken
-import crypto_service.model.sensor
+import cryptoservice.exception.exceptions.SopsEncryptionException
+import cryptoservice.model.GCPAccessToken
+import cryptoservice.model.sensor
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.io.BufferedReader

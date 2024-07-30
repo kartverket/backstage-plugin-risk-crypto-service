@@ -1,4 +1,4 @@
-package crypto_service.service
+package cryptoservice.service
 
 val sopsCmd: List<String> = listOf("sops")
 val encrypt: List<String> = listOf("encrypt")

@@ -1,4 +1,4 @@
-package crypto_service.controller.models
+package cryptoservice.controller.models
 
 data class EncryptionRequest(
     val text: String,

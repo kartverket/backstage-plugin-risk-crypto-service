@@ -1,9 +1,9 @@
-package crypto_service.controller
+package cryptoservice.controller
 
-import crypto_service.controller.models.EncryptionRequest
-import crypto_service.model.GCPAccessToken
-import crypto_service.service.DecryptionService
-import crypto_service.service.EncryptionService
+import cryptoservice.controller.models.EncryptionRequest
+import cryptoservice.model.GCPAccessToken
+import cryptoservice.service.DecryptionService
+import cryptoservice.service.EncryptionService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping

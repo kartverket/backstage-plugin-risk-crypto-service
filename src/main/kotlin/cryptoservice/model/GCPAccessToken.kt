@@ -1,4 +1,4 @@
-package crypto_service.model
+package cryptoservice.model
 
 data class GCPAccessToken(val value: String)
 

@@ -1,4 +1,4 @@
-package crypto_service.exception.exceptions
+package cryptoservice.exception.exceptions
 
 data class SopsEncryptionException(
     override val message: String,
