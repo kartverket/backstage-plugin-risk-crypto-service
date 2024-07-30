@@ -3,15 +3,13 @@ package crypto_service.service
 import crypto_service.exception.exceptions.SopsEncryptionException
 import crypto_service.model.GCPAccessToken
 import crypto_service.model.sensor
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import org.slf4j.LoggerFactory
-
 
 @Service
 class EncryptionService {
-
     private val processBuilder = ProcessBuilder().redirectErrorStream(true)
 
     private val logger = LoggerFactory.getLogger(DecryptionService::class.java)
@@ -20,7 +18,7 @@ class EncryptionService {
         text: String,
         config: String,
         gcpAccessToken: GCPAccessToken,
-        riScId: String
+        riScId: String,
     ): String {
         return try {
             processBuilder
@@ -37,10 +35,10 @@ class EncryptionService {
                                 message = "Failed when encrypting RiSc with ID: $riScId by running sops command: ${
                                     toEncryptionCommand(
                                         config,
-                                        gcpAccessToken.sensor().value
+                                        gcpAccessToken.sensor().value,
                                     )
                                 } with error message: $result",
-                                riScId = riScId
+                                riScId = riScId,
                             )
                         }
                     }
@@ -55,8 +53,8 @@ class EncryptionService {
         config: String,
         accessToken: String,
     ): List<String> =
-        sopsCmd + encrypt + inputTypeJson + outputTypeYaml + encryptConfig + config + inputFile + gcpAccessToken(
-            accessToken
-        )
-
+        sopsCmd + encrypt + inputTypeJson + outputTypeYaml + encryptConfig + config + inputFile +
+            gcpAccessToken(
+                accessToken,
+            )
 }
