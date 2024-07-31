@@ -20,18 +20,17 @@ class CryptoController(
     val decryptionService: DecryptionService,
 ) {
     /* Dette er slik vi egentlig burde gjøre dekryptering, for at crypto-service kan være helt uavhengig av
-    * tjenesten som kaller den. Ettersom SOPS + age er avhengig av at det enten finnes en keys.txt-fil eller
-    * at `SOPS_AGE_KEY` er satt som miljøvariabel, så kan vi ikke gjøre det på denne måten enda. Det er mulig dette
-    * kan bli støttet i fremtiden ifølge dokumentasjonen til SOPS.
-    * */
+     * tjenesten som kaller den. Ettersom SOPS + age er avhengig av at det enten finnes en keys.txt-fil eller
+     * at `SOPS_AGE_KEY` er satt som miljøvariabel, så kan vi ikke gjøre det på denne måten enda. Det er mulig dette
+     * kan bli støttet i fremtiden ifølge dokumentasjonen til SOPS.
+     */
     @GetMapping("/decrypt")
     fun decrypt(
         @RequestHeader gcpAccessToken: String,
         @RequestHeader agePrivateKey: String,
         @RequestBody cipherText: String,
     ): ResponseEntity<String> {
-
-        //Bruk decryptionService.decrypt() og legg til agePrivateKey som inputparameter.
+        // Bruk decryptionService.decrypt() og legg til agePrivateKey som inputparameter.
 
         return ResponseEntity("Not implemented yet", HttpStatus.NOT_IMPLEMENTED)
     }
