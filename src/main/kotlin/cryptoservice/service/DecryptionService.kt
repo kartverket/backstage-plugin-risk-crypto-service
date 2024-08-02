@@ -2,15 +2,12 @@ package cryptoservice.service
 
 import cryptoservice.exception.exceptions.SOPSDecryptionException
 import cryptoservice.model.GCPAccessToken
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
 @Service
-class DecryptionService(
-    @Value("\${sops.ageKey}") val ageKey: String,
-) {
+class DecryptionService {
     private val processBuilder = ProcessBuilder().redirectErrorStream(true)
 
     fun decrypt(
@@ -19,7 +16,7 @@ class DecryptionService(
     ): String {
         return try {
             processBuilder
-                .command(toDecryptionCommand(gcpAccessToken.value, ageKey))
+                .command(toDecryptionCommand(gcpAccessToken.value))
                 .start()
                 .run {
                     outputStream.buffered().also { it.write(ciphertext.toByteArray()) }.close()
@@ -39,11 +36,8 @@ class DecryptionService(
         }
     }
 
-    private fun toDecryptionCommand(
-        accessToken: String,
-        sopsPrivateKey: String,
-    ): List<String> =
-        sopsCmd + ageSecret(sopsPrivateKey) + decrypt + inputTypeYaml + outputTypeJson + inputFile +
+    private fun toDecryptionCommand(accessToken: String): List<String> =
+        sopsCmd + decrypt + inputTypeYaml + outputTypeJson + inputFile +
             gcpAccessToken(
                 accessToken,
             )
