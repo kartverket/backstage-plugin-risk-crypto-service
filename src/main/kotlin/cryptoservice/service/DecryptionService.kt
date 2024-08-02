@@ -36,11 +36,9 @@ class DecryptionService {
         }
     }
 
-    private fun toDecryptionCommand(
-        accessToken: String,
-    ): List<String> =
+    private fun toDecryptionCommand(accessToken: String): List<String> =
         sopsCmd + decrypt + inputTypeYaml + outputTypeJson + inputFile +
-                gcpAccessToken(
-                    accessToken,
-                )
+            gcpAccessToken(
+                accessToken,
+            )
 }

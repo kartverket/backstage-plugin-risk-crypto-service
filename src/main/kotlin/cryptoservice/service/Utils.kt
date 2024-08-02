@@ -13,5 +13,3 @@ val inputFile: List<String> = listOf("/dev/stdin")
 const val EXECUTION_STATUS_OK = 0
 
 fun gcpAccessToken(accessToken: String): List<String> = listOf("--gcp-access-token", accessToken)
-
-fun ageSecret(sopsPrivateKey: String): List<String> = listOf("--age", sopsPrivateKey)
