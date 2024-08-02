@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Local Server" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <option name="ACTIVE_PROFILES" value="local" />
+    <envs>
+      <env name="SOPS_AGE_KEY" value="AGE-SECRET-KEY-1X5DH3RVJ83CK3TJNGGC5QA277NRC9JDK2W5DUG8DY5P05CVL88WS8FT049" />
+    </envs>
+    <module name="backstage-plugin-risk-scorecard-crypto-service.main" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="cryptoservice.CryptoServiceApplication" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
