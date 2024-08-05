@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RestController
-import java.net.URLDecoder
-import java.nio.charset.StandardCharsets
 
 @RestController
 class CryptoController(
@@ -45,22 +43,8 @@ class CryptoController(
         return ResponseEntity.ok().body(decryptedString)
     }
 
-    @GetMapping("/encrypt")
-    fun encrypt(
-        text: String,
-        config: String,
-        gcpAccessToken: String,
-        riScId: String,
-    ): ResponseEntity<String> {
-        // Hva skjer om decodingen feiler?
-        val urlDecodedText = URLDecoder.decode(text, StandardCharsets.UTF_8.toString())
-        val encryptedString = encryptionService.encrypt(urlDecodedText, config, GCPAccessToken(gcpAccessToken), riScId)
-
-        return ResponseEntity.ok().body(encryptedString)
-    }
-
     @PostMapping("/encrypt")
-    fun encryptPost(
+    fun encrypt(
         @RequestBody request: EncryptionRequest,
     ): ResponseEntity<String> {
         val encryptedString =
