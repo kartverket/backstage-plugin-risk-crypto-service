@@ -6,6 +6,7 @@ import cryptoservice.model.sensor
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.io.BufferedReader
+import java.io.File
 import java.io.InputStreamReader
 
 @Service
@@ -21,8 +22,13 @@ class EncryptionService {
         riScId: String,
     ): String {
         return try {
+            val tempFile = File.createTempFile("sopsConfig-$riScId-${System.currentTimeMillis()}", ".yaml")
+            println("Temporary file created here: ${tempFile.absolutePath}")
+            tempFile.writeText(config)
+            tempFile.deleteOnExit()
+
             processBuilder
-                .command(toEncryptionCommand(config, gcpAccessToken.value))
+                .command("sh", "-c", "GOOGLE_CREDENTIALS_ACCESS_TOKEN=${gcpAccessToken.value} sops --encrypt --input-type json --output-type yaml --config ${tempFile.absolutePath} /dev/stdin")
                 .start()
                 .run {
                     outputStream.buffered().also { it.write(text.toByteArray()) }.close()
@@ -32,29 +38,16 @@ class EncryptionService {
                         else -> {
                             logger.error("IOException from encrypting yaml with error code ${exitValue()}: $result")
                             throw SopsEncryptionException(
-                                message = "Failed when encrypting RiSc with ID: $riScId by running sops command: ${
-                                    toEncryptionCommand(
-                                        config,
-                                        gcpAccessToken.sensor().value,
-                                    )
-                                } with error message: $result",
+                                message = "Failed when encrypting RiSc with ID: $riScId by running sops command: sops --encrypt --input-type json --output-type yaml --config ${tempFile.absolutePath} /dev/stdin with error message: $result",
                                 riScId = riScId,
                             )
                         }
                     }
                 }
+
         } catch (e: Exception) {
             logger.error("Decrypting failed.", e)
             throw e
         }
     }
-
-    private fun toEncryptionCommand(
-        config: String,
-        accessToken: String,
-    ): List<String> =
-        sopsCmd + encrypt + inputTypeJson + outputTypeYaml + encryptConfig + config + inputFile +
-            gcpAccessToken(
-                accessToken,
-            )
 }
