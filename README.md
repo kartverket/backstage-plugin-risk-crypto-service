@@ -1,5 +1,3 @@
-#Dette er en test
-hehe
 # backstage-plugin-risk-crypto-service
 
 
