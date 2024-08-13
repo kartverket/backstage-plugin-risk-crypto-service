@@ -23,7 +23,6 @@ class EncryptionService {
     ): String {
         return try {
             val tempFile = File.createTempFile("sopsConfig-$riScId-${System.currentTimeMillis()}", ".yaml")
-            println("Temporary file created here: ${tempFile.absolutePath}")
             tempFile.writeText(config)
             tempFile.deleteOnExit()
 
