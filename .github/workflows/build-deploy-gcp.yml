@@ -1,0 +1,62 @@
+name: Build and deploy crypto service to Cloud Run
+on:
+  push:
+    paths-ignore:
+      - docker-compose.yaml
+      - README**
+    branches:
+      - main
+
+env:
+  REGISTRY: europe-north1-docker.pkg.dev
+  IMAGE_OWNER: kv-ros
+  GCP_PROJECT: spire-ros-5lmr
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  docker_build_and_push_to_gcp:
+    name: 'Docker build and push to GCP'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: 'actions/checkout@v4'
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_JSON_KEY }}
+
+      # To optionally display info about current gcloud environment
+      - name: Set up Cloud SDK
+        uses: "google-github-actions/setup-gcloud@v1"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Use gcloud CLI
+        run: "gcloud info"
+
+      # Auth Docker to access the artifact registry
+      - name: "Docker auth"
+        run: |-
+          gcloud auth configure-docker ${{ env.REGISTRY }} --quiet
+
+      - name: Login to GAR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: _json_key
+          password: ${{ secrets.GCP_SERVICE_ACCOUNT_JSON_KEY }}
+
+      - name: Push to Google Artifact Registry
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.GCP_PROJECT }}/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:latest
+          platforms: linux/amd64,linux/arm64
