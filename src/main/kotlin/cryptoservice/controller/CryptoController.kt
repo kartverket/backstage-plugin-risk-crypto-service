@@ -4,7 +4,6 @@ import cryptoservice.controller.models.EncryptionRequest
 import cryptoservice.model.GCPAccessToken
 import cryptoservice.service.DecryptionService
 import cryptoservice.service.EncryptionService
-import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
