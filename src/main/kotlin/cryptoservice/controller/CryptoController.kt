@@ -24,7 +24,7 @@ class CryptoController(
      * at `SOPS_AGE_KEY` er satt som miljøvariabel, så kan vi ikke gjøre det på denne måten enda. Det er mulig dette
      * kan bli støttet i fremtiden ifølge dokumentasjonen til SOPS.
      */
-    @GetMapping("/decrypt-with-age-key")
+    @PostMapping("/decrypt-with-age-key")
     fun decryptWithAgeKey(
         @RequestHeader gcpAccessToken: String,
         @RequestHeader agePrivateKey: String,
@@ -35,7 +35,7 @@ class CryptoController(
         return ResponseEntity("Not implemented yet", HttpStatus.NOT_IMPLEMENTED)
     }
 
-    @GetMapping("/decrypt")
+    @PostMapping("/decrypt")
     fun decrypt(
         @RequestHeader gcpAccessToken: String,
         @RequestBody cipherText: String,
