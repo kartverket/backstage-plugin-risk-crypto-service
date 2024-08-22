@@ -4,6 +4,7 @@ import cryptoservice.controller.models.EncryptionRequest
 import cryptoservice.model.GCPAccessToken
 import cryptoservice.service.DecryptionService
 import cryptoservice.service.EncryptionService
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -19,6 +20,21 @@ class CryptoController(
     val encryptionService: EncryptionService,
     val decryptionService: DecryptionService,
 ) {
+    val logger = LoggerFactory.getLogger(CryptoController::class.java)
+
+    @GetMapping("/ping")
+    fun ping(): ResponseEntity<String> {
+        logger.info("Running ping")
+        return ResponseEntity.ok("pong")
+    }
+
+    @GetMapping("/ping-with-body")
+    fun ping(@RequestBody body: String): ResponseEntity<String> {
+        logger.info("Running ping with body $body ")
+        return ResponseEntity.ok("pong")
+    }
+
+
     /* Dette er slik vi egentlig burde gjøre dekryptering, for at crypto-service kan være helt uavhengig av
      * tjenesten som kaller den. Ettersom SOPS + age er avhengig av at det enten finnes en keys.txt-fil eller
      * at `SOPS_AGE_KEY` er satt som miljøvariabel, så kan vi ikke gjøre det på denne måten enda. Det er mulig dette
