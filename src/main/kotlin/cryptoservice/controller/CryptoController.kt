@@ -20,26 +20,12 @@ class CryptoController(
     val encryptionService: EncryptionService,
     val decryptionService: DecryptionService,
 ) {
-    val logger = LoggerFactory.getLogger(CryptoController::class.java)
-
-    @GetMapping("/ping")
-    fun ping(): ResponseEntity<String> {
-        logger.info("Running ping")
-        return ResponseEntity.ok("pong")
-    }
-
-    @GetMapping("/ping-with-body")
-    fun ping(@RequestBody body: String): ResponseEntity<String> {
-        logger.info("Running ping with body $body ")
-        return ResponseEntity.ok("pong")
-    }
-
     /* Dette er slik vi egentlig burde gjøre dekryptering, for at crypto-service kan være helt uavhengig av
      * tjenesten som kaller den. Ettersom SOPS + age er avhengig av at det enten finnes en keys.txt-fil eller
      * at `SOPS_AGE_KEY` er satt som miljøvariabel, så kan vi ikke gjøre det på denne måten enda. Det er mulig dette
      * kan bli støttet i fremtiden ifølge dokumentasjonen til SOPS.
      */
-    @GetMapping("/decrypt-with-age-key")
+    @PostMapping("/decrypt-with-age-key")
     fun decryptWithAgeKey(
         @RequestHeader gcpAccessToken: String,
         @RequestHeader agePrivateKey: String,
@@ -50,7 +36,7 @@ class CryptoController(
         return ResponseEntity("Not implemented yet", HttpStatus.NOT_IMPLEMENTED)
     }
 
-    @GetMapping("/decrypt")
+    @PostMapping("/decrypt")
     fun decrypt(
         @RequestHeader gcpAccessToken: String,
         @RequestBody cipherText: String,
