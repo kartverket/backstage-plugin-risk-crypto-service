@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3fb14dec-05f0-4328-87e3-2683b6041a04" name="Changes" comment="test: legg til to enkle endepunkter for test" />
+    <list default="true" id="3fb14dec-05f0-4328-87e3-2683b6041a04" name="Changes" comment="test: legg til to enkle endepunkter for test">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.run/Local Server.run.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.run/Local Server.run.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cryptoservice/controller/CryptoController.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cryptoservice/controller/CryptoController.kt" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -168,6 +172,19 @@
       <option name="MAIN_CLASS_NAME" value="cryptoservice.service.EncryptionServiceTest" />
       <option name="METHOD_NAME" value="encrypt works" />
       <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="backstage-plugin-risk-scorecard-crypto-service" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="backstage-plugin-risk-scorecard-crypto-service" />
+      <option name="filePath" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
