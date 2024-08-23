@@ -45,6 +45,16 @@ class CryptoController(
         return ResponseEntity.ok().body(decryptedString)
     }
 
+    @PostMapping("/decrypt")
+    fun decryptPost(
+        @RequestHeader gcpAccessToken: String,
+        @RequestBody cipherText: String,
+    ): ResponseEntity<String> {
+        val decryptedString = decryptionService.decrypt(cipherText, GCPAccessToken(gcpAccessToken))
+
+        return ResponseEntity.ok().body(decryptedString)
+    }
+
     @GetMapping("/encrypt")
     fun encrypt(
         text: String,
