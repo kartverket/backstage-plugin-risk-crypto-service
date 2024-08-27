@@ -17,7 +17,7 @@ class DecryptionService {
     ): String {
         return try {
             processBuilder
-                .command("sh", "-c", "SOPS_AGE_KEY=$sopsAgeKey GOOGLE_CREDENTIALS_ACCESS_TOKEN=${gcpAccessToken.value} sops decrypt --input-type yaml --output-type json /dev/stdin")
+                .command("sh", "-c", "SOPS_AGE_KEY=$sopsAgeKey GOOGLE_OAUTH_ACCESS_TOKEN=${gcpAccessToken.value} sops decrypt --input-type yaml --output-type json /dev/stdin")
                 .start()
                 .run {
                     outputStream.buffered().also { it.write(ciphertext.toByteArray()) }.close()

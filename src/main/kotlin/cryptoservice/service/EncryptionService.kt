@@ -27,7 +27,7 @@ class EncryptionService {
             tempFile.deleteOnExit()
 
             processBuilder
-                .command("sh", "-c", "GOOGLE_CREDENTIALS_ACCESS_TOKEN=${gcpAccessToken.value} sops --encrypt --input-type json --output-type yaml --config ${tempFile.absolutePath} /dev/stdin")
+                .command("sh", "-c", "GOOGLE_OAUTH_ACCESS_TOKEN=${gcpAccessToken.value} sops --encrypt --input-type json --output-type yaml --config ${tempFile.absolutePath} /dev/stdin")
                 .start()
                 .run {
                     outputStream.buffered().also { it.write(text.toByteArray()) }.close()

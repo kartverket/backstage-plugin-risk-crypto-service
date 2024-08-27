@@ -30,7 +30,7 @@ class EncryptionServiceTest {
     }
 
     @Test
-    fun `when `() {
+    fun `when gcp access token is invalid an exception is thrown`() {
         val invalidGcpAccessToken = GCPAccessToken("feil")
         val configWithGCPResourceAndAge = "creation_rules:\n" +
                 "    - key_groups:\n" +
