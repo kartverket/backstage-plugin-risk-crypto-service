@@ -5,9 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3fb14dec-05f0-4328-87e3-2683b6041a04" name="Changes" comment="test: legg til to enkle endepunkter for test">
+      <change beforePath="$PROJECT_DIR$/.github/workflows/build-deploy.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/build-deploy.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/kotlinc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/kotlinc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.run/Local Server.run.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.run/Local Server.run.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cryptoservice/controller/CryptoController.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cryptoservice/controller/CryptoController.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,6 +32,11 @@
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="backstage-plugin-risk-scorecard-crypto-service" type="f1a62948:ProjectNode" />
               </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="backstage-plugin-risk-scorecard-crypto-service" type="f1a62948:ProjectNode" />
+                <item name="Run Configurations" type="7b0102dc:RunConfigurationsNode" />
+              </path>
             </expand>
             <select />
           </tree_state>
@@ -55,6 +60,9 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RESET_MODE" value="SOFT" />
+  </component>
+  <component name="GoLibraries">
+    <option name="indexEntireGoPath" value="true" />
   </component>
   <component name="JavaAutoRunManager">
     <enabled-run-configurations>
@@ -94,12 +102,15 @@
     &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
     &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
     &quot;Spring Boot.Local Server.executor&quot;: &quot;Run&quot;,
     &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary&quot;: &quot;JUnit5&quot;,
     &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5&quot;: &quot;&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;chore/sjekk-med-ping&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/maren/Documents/code/ros/backstage-plugin-risk-crypto-service&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/lars/Documents/Kartverket/backstage-plugin-risk-crypto-service&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -111,7 +122,7 @@
   },
   &quot;keyToStringList&quot;: {
     &quot;kotlin-gradle-user-dirs&quot;: [
-      &quot;/Users/maren/.gradle&quot;
+      &quot;/Users/lars/.gradle&quot;
     ]
   }
 }</component>
@@ -126,7 +137,7 @@
       <recent name="cryptoservice.service" />
     </key>
   </component>
-  <component name="RunManager" selected="Spring Boot.Local Server">
+  <component name="RunManager" selected="Gradle.EncryptionServiceTest.encrypt data">
     <configuration name="EncryptionServiceTest.encrypt data" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -176,19 +187,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="JetRunConfigurationType">
-      <module name="backstage-plugin-risk-scorecard-crypto-service" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <module name="backstage-plugin-risk-scorecard-crypto-service" />
-      <option name="filePath" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="HTTP Request.generated-requests | #6" />
@@ -223,6 +221,10 @@
       <workItem from="1723532394055" duration="11112000" />
       <workItem from="1724163806026" duration="10000" />
       <workItem from="1724165224366" duration="13738000" />
+      <workItem from="1724763445630" duration="64000" />
+      <workItem from="1724763532113" duration="58000" />
+      <workItem from="1724763596038" duration="104000" />
+      <workItem from="1724766133828" duration="88000" />
     </task>
     <task id="LOCAL-00001" summary="wip: dekryptering og kryptering forenklet(?)">
       <option name="closed" value="true" />
@@ -270,6 +272,10 @@
     <MESSAGE value="chore: fjern ubrukt kode" />
     <MESSAGE value="test: legg til to enkle endepunkter for test" />
     <option name="LAST_COMMIT_MESSAGE" value="test: legg til to enkle endepunkter for test" />
+  </component>
+  <component name="VgoProject">
+    <integration-enabled>false</integration-enabled>
+    <settings-migrated>true</settings-migrated>
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
