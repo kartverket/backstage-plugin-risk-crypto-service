@@ -19,7 +19,7 @@ import java.nio.charset.StandardCharsets
 class CryptoController(
     val encryptionService: EncryptionService,
     val decryptionService: DecryptionService,
-    @Value("\$sops.ageKey") val sopsAgePrivateKey: String
+    @Value("\$sops.ageKey") val sopsAgePrivateKey: String,
 ) {
     /* Dette er slik vi egentlig burde gjøre dekryptering, for at crypto-service kan være helt uavhengig av
      * tjenesten som kaller den. Ettersom SOPS + age er avhengig av at det enten finnes en keys.txt-fil eller
@@ -53,11 +53,12 @@ class CryptoController(
         @RequestHeader gcpAccessToken: String,
         @RequestBody cipherText: String,
     ): ResponseEntity<String> {
-        val decryptedString = decryptionService.decrypt(
-            ciphertext = cipherText,
-            gcpAccessToken = GCPAccessToken(gcpAccessToken),
-            sopsAgeKey = sopsAgePrivateKey
-        )
+        val decryptedString =
+            decryptionService.decrypt(
+                ciphertext = cipherText,
+                gcpAccessToken = GCPAccessToken(gcpAccessToken),
+                sopsAgeKey = sopsAgePrivateKey,
+            )
 
         return ResponseEntity.ok().body(decryptedString)
     }
@@ -71,12 +72,13 @@ class CryptoController(
     ): ResponseEntity<String> {
         // Hva skjer om decodingen feiler?
         val urlDecodedText = URLDecoder.decode(text, StandardCharsets.UTF_8.toString())
-        val encryptedString = encryptionService.encrypt(
-            text = urlDecodedText,
-            config = config,
-            gcpAccessToken = GCPAccessToken(gcpAccessToken),
-            riScId = riScId
-        )
+        val encryptedString =
+            encryptionService.encrypt(
+                text = urlDecodedText,
+                config = config,
+                gcpAccessToken = GCPAccessToken(gcpAccessToken),
+                riScId = riScId,
+            )
 
         return ResponseEntity.ok().body(encryptedString)
     }

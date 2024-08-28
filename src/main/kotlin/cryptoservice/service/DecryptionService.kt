@@ -13,12 +13,16 @@ class DecryptionService {
     fun decrypt(
         ciphertext: String,
         gcpAccessToken: GCPAccessToken,
-        sopsAgeKey: String
-    ): String {
-        return try {
+        sopsAgeKey: String,
+    ): String =
+        try {
             processBuilder
-                .command("sh", "-c", "SOPS_AGE_KEY=$sopsAgeKey GOOGLE_OAUTH_ACCESS_TOKEN=${gcpAccessToken.value} sops decrypt --input-type yaml --output-type json /dev/stdin")
-                .start()
+                .command(
+                    "sh",
+                    "-c",
+                    "SOPS_AGE_KEY=$sopsAgeKey GOOGLE_OAUTH_ACCESS_TOKEN=${gcpAccessToken.value} " +
+                        "sops decrypt --input-type yaml --output-type json /dev/stdin",
+                ).start()
                 .run {
                     outputStream.buffered().also { it.write(ciphertext.toByteArray()) }.close()
                     val result = BufferedReader(InputStreamReader(inputStream)).readText()
@@ -35,5 +39,4 @@ class DecryptionService {
         } catch (e: Exception) {
             throw e
         }
-    }
 }

@@ -14,7 +14,6 @@ import java.util.stream.Stream
 
 @Disabled
 class DecryptionServiceTest {
-
     companion object {
         // OBS! Remember to remove before committing
         val validGCPAccessToken = GCPAccessToken("ditt gyldige token")
@@ -25,7 +24,10 @@ class DecryptionServiceTest {
         val invalidAgeKey = ""
 
         val clearTextPartOfContent = "hei"
-        val sopsFileWithShamir1 = "hei: ENC[AES256_GCM,data:r5bHVoU=,iv:M3YhjRcP7EFSUP5uyjsvUcUVttcnBmM4GPDgdxmUi2A=,tag:UZLHS679wF6jSWAfftz+iQ==,type:str]\n" +
+
+        @Suppress("ktlint:standard:max-line-length")
+        val sopsFileWithShamir1 =
+            "hei: ENC[AES256_GCM,data:r5bHVoU=,iv:M3YhjRcP7EFSUP5uyjsvUcUVttcnBmM4GPDgdxmUi2A=,tag:UZLHS679wF6jSWAfftz+iQ==,type:str]\n" +
                 "hva: ENC[AES256_GCM,data:jgxACAo=,iv:fCpggS7M/eFNC1ce0Gmy/7wOgS6sF2igcJwqVqxDy80=,tag:GjWX6R+5GXFewJ50HVTZPQ==,type:str]\n" +
                 "sops:\n" +
                 "    shamir_threshold: 1\n" +
@@ -51,7 +53,10 @@ class DecryptionServiceTest {
                 "    pgp: []\n" +
                 "    unencrypted_suffix: _unencrypted\n" +
                 "    version: 3.9.0"
-        val sopsFileWithShamir2 = "hei: ENC[AES256_GCM,data:8DD8C0g=,iv:WegIEU7t+H4eFaBynjK9WpvoJSdzvmE81OVu5FxC62M=,tag:EEI+4l3Y85PhpwiBsfnEkw==,type:str]\n" +
+
+        @Suppress("ktlint:standard:max-line-length")
+        val sopsFileWithShamir2 =
+            "hei: ENC[AES256_GCM,data:8DD8C0g=,iv:WegIEU7t+H4eFaBynjK9WpvoJSdzvmE81OVu5FxC62M=,tag:EEI+4l3Y85PhpwiBsfnEkw==,type:str]\n" +
                 "hva: ENC[AES256_GCM,data:ybxaqB8=,iv:xRxprceL9Fj3QGS0RRTjg63R23xJxfjYsJw1pHuU4PE=,tag:ZPuwrwSK79OSUG/8nAts4A==,type:str]\n" +
                 "sops:\n" +
                 "    shamir_threshold: 2\n" +
@@ -84,16 +89,15 @@ class DecryptionServiceTest {
                 "    unencrypted_suffix: _unencrypted\n" +
                 "    version: 3.9.0"
 
-        val sopsFileWithDifferentGCPResourceAndAgeKey = ""
-
-
         class DecryptionParameters(
             val gcpAccessToken: GCPAccessToken,
             val ageKey: String,
-            val cipherText: String
+            val cipherText: String,
         )
 
-        val cipherTextWithAge1 =  "hei: ENC[AES256_GCM,data:LwQHXY0=,iv:KZ1W3FxTubvbmeQl6fjHfvIh7J7T2bEGD5PaF8INGBM=,tag:3HcsDICtwqGIg3dfMJifuA==,type:str]\n" +
+        @Suppress("ktlint:standard:max-line-length")
+        val cipherTextWithAge1 =
+            "hei: ENC[AES256_GCM,data:LwQHXY0=,iv:KZ1W3FxTubvbmeQl6fjHfvIh7J7T2bEGD5PaF8INGBM=,tag:3HcsDICtwqGIg3dfMJifuA==,type:str]\n" +
                 "hva: ENC[AES256_GCM,data:e6++Q+U=,iv:0noiujc8o+mTrQw0CNWUHcQs7G1yjBdnIYt3aoBhuus=,tag:LjeBxw1ZBSowRqNhRC922Q==,type:str]\n" +
                 "sops:\n" +
                 "    shamir_threshold: 2\n" +
@@ -125,7 +129,10 @@ class DecryptionServiceTest {
                 "    pgp: []\n" +
                 "    unencrypted_suffix: _unencrypted\n" +
                 "    version: 3.9.0"
-        val cipherTextWithAge2 = "hei: ENC[AES256_GCM,data:mO8KEj0=,iv:HBAq6EcL9xz4ByW+BtSxoozvHFaKLQ+Rc1+I4/JeWQQ=,tag:ipyXK343QfcuzEcdcEc13g==,type:str]\n" +
+
+        @Suppress("ktlint:standard:max-line-length")
+        val cipherTextWithAge2 =
+            "hei: ENC[AES256_GCM,data:mO8KEj0=,iv:HBAq6EcL9xz4ByW+BtSxoozvHFaKLQ+Rc1+I4/JeWQQ=,tag:ipyXK343QfcuzEcdcEc13g==,type:str]\n" +
                 "hva: ENC[AES256_GCM,data:D16Q6/M=,iv:8Do4gzPCHCs/RhvGlan2IQGcs9NQsWu9GsFjUylqtvU=,tag:lddQe0BQwI1DZ0uurNVuUg==,type:str]\n" +
                 "sops:\n" +
                 "    shamir_threshold: 2\n" +
@@ -158,64 +165,66 @@ class DecryptionServiceTest {
                 "    unencrypted_suffix: _unencrypted\n" +
                 "    version: 3.9.0"
 
-        val arbitraryDecryptionParameters1 =  DecryptionParameters(
-            gcpAccessToken = validGCPAccessToken,
-            ageKey = ageKey1,
-            cipherText = cipherTextWithAge1
-        )
+        val arbitraryDecryptionParameters1 =
+            DecryptionParameters(
+                gcpAccessToken = validGCPAccessToken,
+                ageKey = ageKey1,
+                cipherText = cipherTextWithAge1,
+            )
 
-        val arbitraryDecryptionParameters2 =  DecryptionParameters(
-            gcpAccessToken = validGCPAccessToken,
-            ageKey = ageKey2,
-            cipherText = cipherTextWithAge2
-        )
+        val arbitraryDecryptionParameters2 =
+            DecryptionParameters(
+                gcpAccessToken = validGCPAccessToken,
+                ageKey = ageKey2,
+                cipherText = cipherTextWithAge2,
+            )
 
         @JvmStatic
-        fun listOfDecryptionParameters(): Stream<Arguments> = Stream.of(
-            Arguments.of(arbitraryDecryptionParameters1),
-            Arguments.of(arbitraryDecryptionParameters2),
-            Arguments.of(arbitraryDecryptionParameters1),
-            Arguments.of(arbitraryDecryptionParameters1),
-            Arguments.of(arbitraryDecryptionParameters2),
-            Arguments.of(arbitraryDecryptionParameters2),
-            Arguments.of(arbitraryDecryptionParameters1),
-            Arguments.of(arbitraryDecryptionParameters1),
-            Arguments.of(arbitraryDecryptionParameters2),
-            Arguments.of(arbitraryDecryptionParameters2),
-            Arguments.of(arbitraryDecryptionParameters1),
-            Arguments.of(arbitraryDecryptionParameters1),
-            Arguments.of(arbitraryDecryptionParameters1),
-            Arguments.of(arbitraryDecryptionParameters2),
-            Arguments.of(arbitraryDecryptionParameters2),
-            Arguments.of(arbitraryDecryptionParameters2),
-        )
+        fun listOfDecryptionParameters(): Stream<Arguments> =
+            Stream.of(
+                Arguments.of(arbitraryDecryptionParameters1),
+                Arguments.of(arbitraryDecryptionParameters2),
+                Arguments.of(arbitraryDecryptionParameters1),
+                Arguments.of(arbitraryDecryptionParameters1),
+                Arguments.of(arbitraryDecryptionParameters2),
+                Arguments.of(arbitraryDecryptionParameters2),
+                Arguments.of(arbitraryDecryptionParameters1),
+                Arguments.of(arbitraryDecryptionParameters1),
+                Arguments.of(arbitraryDecryptionParameters2),
+                Arguments.of(arbitraryDecryptionParameters2),
+                Arguments.of(arbitraryDecryptionParameters1),
+                Arguments.of(arbitraryDecryptionParameters1),
+                Arguments.of(arbitraryDecryptionParameters1),
+                Arguments.of(arbitraryDecryptionParameters2),
+                Arguments.of(arbitraryDecryptionParameters2),
+                Arguments.of(arbitraryDecryptionParameters2),
+            )
 
         val decryptionService = DecryptionService()
     }
 
-
     @Test
-    fun `when age key is present and shamir is 1 the ciphertext is successfully decrypted`(){
+    fun `when age key is present and shamir is 1 the ciphertext is successfully decrypted`() {
         decryptionService.decrypt(sopsFileWithShamir1, invalidGCPAccessToken, ageKey1)
     }
 
     @Test
-    fun `when gcp access token is valid and shamir is 1 the ciphertext is successfully decrypted`(){
+    fun `when gcp access token is valid and shamir is 1 the ciphertext is successfully decrypted`() {
         decryptionService.decrypt(sopsFileWithShamir1, validGCPAccessToken, invalidAgeKey)
     }
 
     @Test
-    fun `when age key and gcp access token is present and shamir is 2 the ciphertext is successfully decrypted`(){
+    fun `when age key and gcp access token is present and shamir is 2 the ciphertext is successfully decrypted`() {
         decryptionService.decrypt(sopsFileWithShamir2, validGCPAccessToken, ageKey1)
     }
 
     @Test
-    fun `when age key is not present and gcp access token is valid and shamir is 2 the decryption fails`(){
+    fun `when age key is not present and gcp access token is valid and shamir is 2 the decryption fails`() {
         assertThrows<Exception> { decryptionService.decrypt(sopsFileWithShamir2, validGCPAccessToken, invalidAgeKey) }
     }
 
     @Test
-    fun `when age and key is present but gcp access token is invalid and shamir is 2 the decryption fails`(){
+    fun `when age and key is present but gcp access token is invalid and shamir is 2 the decryption fails`() {
         assertThrows<Exception> { decryptionService.decrypt(sopsFileWithShamir2, invalidGCPAccessToken, ageKey1) }
     }
 
@@ -223,11 +232,12 @@ class DecryptionServiceTest {
     @ParameterizedTest
     @MethodSource("listOfDecryptionParameters")
     fun `test that decryption works with concurrency`(decryptionParameters: DecryptionParameters) {
-        val result = decryptionService.decrypt(
-            ciphertext = decryptionParameters.cipherText,
-            gcpAccessToken = decryptionParameters.gcpAccessToken,
-            sopsAgeKey = decryptionParameters.ageKey
-        )
+        val result =
+            decryptionService.decrypt(
+                ciphertext = decryptionParameters.cipherText,
+                gcpAccessToken = decryptionParameters.gcpAccessToken,
+                sopsAgeKey = decryptionParameters.ageKey,
+            )
 
         assertThat(result).contains(clearTextPartOfContent)
     }
