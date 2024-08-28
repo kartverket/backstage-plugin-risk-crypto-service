@@ -59,9 +59,6 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RESET_MODE" value="SOFT" />
   </component>
-  <component name="GoLibraries">
-    <option name="indexEntireGoPath" value="true" />
-  </component>
   <component name="JavaAutoRunManager">
     <enabled-run-configurations>
       <run-configuration type="GradleRunConfiguration" name="EncryptionServiceTest.encrypt data" />
@@ -135,7 +132,7 @@
       <recent name="cryptoservice.service" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.EncryptionServiceTest.encrypt data">
+  <component name="RunManager" selected="Spring Boot.Local Server">
     <configuration name="EncryptionServiceTest.encrypt data" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -219,10 +216,6 @@
       <workItem from="1723532394055" duration="11112000" />
       <workItem from="1724163806026" duration="10000" />
       <workItem from="1724165224366" duration="13738000" />
-      <workItem from="1724763445630" duration="64000" />
-      <workItem from="1724763532113" duration="58000" />
-      <workItem from="1724763596038" duration="104000" />
-      <workItem from="1724766133828" duration="88000" />
     </task>
     <task id="LOCAL-00001" summary="wip: dekryptering og kryptering forenklet(?)">
       <option name="closed" value="true" />
@@ -270,10 +263,6 @@
     <MESSAGE value="chore: fjern ubrukt kode" />
     <MESSAGE value="test: legg til to enkle endepunkter for test" />
     <option name="LAST_COMMIT_MESSAGE" value="test: legg til to enkle endepunkter for test" />
-  </component>
-  <component name="VgoProject">
-    <integration-enabled>false</integration-enabled>
-    <settings-migrated>true</settings-migrated>
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
