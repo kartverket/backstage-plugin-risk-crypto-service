@@ -106,22 +106,60 @@ jobs:
         with:
           image_url: ${{ needs.build.outputs.image_url }}
 
-  deploy:
-    name: Deploy to ATGCP1-PROD
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+  sandbox-deploy-argo:
+    name: Deploy to sandbox
+    if: github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
+    environment:
+      name: sandbox
+    permissions:
+      id-token: write
     steps:
-      - name: Checkout apps-repo
-        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+      - uses: octo-sts/action@6177b4481c00308b3839969c3eca88c96a91775f # v1.0.0
+        id: octo-sts
+        with:
+          scope: kartverket/skvis-apps
+          identity: crypto-service
+      - name: Checkout skvis-apps
+        uses: actions/checkout@v4
         with:
           repository: kartverket/skvis-apps
           ref: main
-          token: ${{ secrets.ARGO_PAT }}
+          token: ${{ steps.octo-sts.outputs.token }}
+      - name: Update version
+        run: |
+          echo "\"${{ needs.build.outputs.image_url }}\"" > "env/atgcp1-sandbox/ros-plugin-main/${{ env.ARGO_VERSION_FILE }}"
+          git config --global user.email "noreply@kartverket.no"
+          git config --global user.name "Backstage Plugin Risk Scorecard Backend CI"
+          git commit -am "Update ros-backend ${{ env.ARGO_VERSION_FILE }}"
+          git push
+
+  prod-deploy-argo:
+    name: Deploy to prod
+    if: github.ref == 'refs/heads/main'
+    needs: [build, sandbox-deploy-argo]
+    runs-on: ubuntu-latest
+    environment:
+      name: prod
+    permissions:
+      id-token: write
+    steps:
+      - uses: octo-sts/action@6177b4481c00308b3839969c3eca88c96a91775f # v1.0.0
+        id: octo-sts
+        with:
+          scope: kartverket/skvis-apps
+          identity: crypto-service
+      - name: Checkout skvis-apps
+        uses: actions/checkout@v4
+        with:
+          repository: kartverket/skvis-apps
+          ref: main
+          token: ${{ steps.octo-sts.outputs.token }}
       - name: Update version
         run: |
           echo "\"${{ needs.build.outputs.image_url }}\"" > "env/atgcp1-prod/ros-plugin-main/${{ env.ARGO_VERSION_FILE }}"
           git config --global user.email "noreply@kartverket.no"
-          git config --global user.name "ROS Crypto Service CI"
-          git commit -am "Update ${{ env.ARGO_VERSION_FILE }}"
+          git config --global user.name "Backstage Plugin Risk Scorecard Backend CI"
+          git commit -am "Update ros-backend ${{ env.ARGO_VERSION_FILE }}"
           git push
