@@ -23,5 +23,7 @@ gradle-app.setting
 
 # Idea
 .idea/*
+.idea/workspace.xml
 
-workspace.xml
+# Env
+.env-local
