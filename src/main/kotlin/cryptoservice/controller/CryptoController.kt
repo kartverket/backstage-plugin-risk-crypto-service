@@ -4,6 +4,7 @@ import cryptoservice.controller.models.EncryptionRequest
 import cryptoservice.model.GCPAccessToken
 import cryptoservice.service.DecryptionService
 import cryptoservice.service.EncryptionService
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -18,6 +19,7 @@ import java.nio.charset.StandardCharsets
 class CryptoController(
     val encryptionService: EncryptionService,
     val decryptionService: DecryptionService,
+    @Value("\$sops.ageKey") val sopsAgePrivateKey: String
 ) {
     /* Dette er slik vi egentlig burde gjøre dekryptering, for at crypto-service kan være helt uavhengig av
      * tjenesten som kaller den. Ettersom SOPS + age er avhengig av at det enten finnes en keys.txt-fil eller
@@ -51,7 +53,11 @@ class CryptoController(
         @RequestHeader gcpAccessToken: String,
         @RequestBody cipherText: String,
     ): ResponseEntity<String> {
-        val decryptedString = decryptionService.decrypt(cipherText, GCPAccessToken(gcpAccessToken))
+        val decryptedString = decryptionService.decrypt(
+            ciphertext = cipherText,
+            gcpAccessToken = GCPAccessToken(gcpAccessToken),
+            sopsAgeKey = sopsAgePrivateKey
+        )
 
         return ResponseEntity.ok().body(decryptedString)
     }
@@ -65,7 +71,12 @@ class CryptoController(
     ): ResponseEntity<String> {
         // Hva skjer om decodingen feiler?
         val urlDecodedText = URLDecoder.decode(text, StandardCharsets.UTF_8.toString())
-        val encryptedString = encryptionService.encrypt(urlDecodedText, config, GCPAccessToken(gcpAccessToken), riScId)
+        val encryptedString = encryptionService.encrypt(
+            text = urlDecodedText,
+            config = config,
+            gcpAccessToken = GCPAccessToken(gcpAccessToken),
+            riScId = riScId
+        )
 
         return ResponseEntity.ok().body(encryptedString)
     }
@@ -76,10 +87,10 @@ class CryptoController(
     ): ResponseEntity<String> {
         val encryptedString =
             encryptionService.encrypt(
-                request.text,
-                request.config,
-                GCPAccessToken(request.gcpAccessToken),
-                request.riScId,
+                text = request.text,
+                config = request.config,
+                gcpAccessToken = GCPAccessToken(request.gcpAccessToken),
+                riScId = request.riScId,
             )
 
         return ResponseEntity.ok().body(encryptedString)
