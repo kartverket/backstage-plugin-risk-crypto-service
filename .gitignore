@@ -22,9 +22,15 @@ gradle-app.setting
 
 
 # Idea
+<<<<<<< HEAD
 .idea/**
 
 # Env
 .env.local
 
 bin/**
+=======
+.idea/*
+
+workspace.xml
+>>>>>>> parent of fa2e5a4 (chore: legg til .env-fil for run-config)
