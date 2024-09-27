@@ -60,7 +60,7 @@ The cryptoservice assumes that all files are encrypted with the public key of th
 .sops.yaml-config files), and use the private sops age key to decrypt the files.
 
 Sops is configured to read the private key from either a keys.txt-file from your user configuration directory, or from
-the environment variable. The keys.txt-file will have precedence. // TODO - maren
+the environment variable. The keys.txt-file will have precedence.
 
 This can be created by following these steps for mac-users
 
