@@ -52,6 +52,34 @@ provided.
 
 # Setup
 
+## Download sops
+
+To run the crypto service locally you need to have sops installed.
+
+It is very easy to do with gh
+
+```sh
+brew install gh
+gh auth login
+```
+
+The current version used in crypto service has added functionality with the use of google access tokens to access the
+crypto key resources from the gcp kms.
+
+```shell
+# download the latest version
+gh release download --repo https://github.com/bekk/sops <nyeste versjon> --pattern '*.darwin.arm64'
+
+# rename the file to sops
+mv sops-v1.2.darwin.arm64 sops
+
+# make it executable
+chmod +x sops
+
+# add sops to your path
+export PATH=$PATH:<path to file>
+```
+
 ## Environment variables
 
 **SOPS_AGE_KEY** is an environment variable necessary to run the application with sops. The sops age key is the private
