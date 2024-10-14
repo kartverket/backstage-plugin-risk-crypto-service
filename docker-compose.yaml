@@ -2,5 +2,6 @@ services:
   crypto-service:
     build: .
     ports:
-      - "8080:8081"
-
+      - "8083:8084"
+    env_file:
+      - .env
