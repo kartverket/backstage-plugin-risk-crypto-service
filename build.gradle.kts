@@ -2,6 +2,7 @@ plugins {
     id("org.springframework.boot") version "3.3.2"
     id("io.spring.dependency-management") version "1.1.6"
     kotlin("jvm") version "2.0.10"
+    kotlin("plugin.serialization") version "2.0.10"
     kotlin("plugin.spring") version "2.0.10"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
 }
@@ -19,12 +20,17 @@ repositories {
     mavenCentral()
 }
 
+val fasterXmlJacksonVersion = "2.17.0"
+val kotlinxSerializationVersion = "1.7.3"
+
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-
     implementation("io.micrometer:micrometer-registry-prometheus")
+
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$fasterXmlJacksonVersion")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$fasterXmlJacksonVersion")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
