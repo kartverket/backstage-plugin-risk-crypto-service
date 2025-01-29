@@ -15,11 +15,12 @@ class DecryptionService {
         val rootNode = YamlUtils.objectMapper.readTree(ciphertext)
         val sopsNode = rootNode.get("sops") ?: throw IllegalArgumentException("No sops configuration found in ciphertext")
         val sopsConfig = YamlUtils.objectMapper.treeToValue(sopsNode, SopsConfig::class.java)
-        val cleanConfig = sopsConfig.copy(
-            mac = null,
-            gcpKms = sopsConfig.gcpKms?.map { it.copy(enc = null) },
-            age = sopsConfig.age?.map { it.copy(enc = null) }
-        )
+        val cleanConfig =
+            sopsConfig.copy(
+                mac = null,
+                gcpKms = sopsConfig.gcpKms?.map { it.copy(enc = null) },
+                age = sopsConfig.age?.map { it.copy(enc = null) },
+            )
         return YamlUtils.serialize(cleanConfig)
     }
 
@@ -48,8 +49,8 @@ class DecryptionService {
                         "sh",
                         "-c",
                         "SOPS_AGE_KEY=$sopsAgeKey GOOGLE_OAUTH_ACCESS_TOKEN=${gcpAccessToken.value} " +
-                            "sops decrypt --input-type yaml --output-type json /dev/stdin"
-                    )
+                            "sops decrypt --input-type yaml --output-type json /dev/stdin",
+                    ),
                 ).start()
                 .run {
                     outputStream.buffered().also { it.write(ciphertext.toByteArray()) }.close()

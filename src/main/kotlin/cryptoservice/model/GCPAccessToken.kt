@@ -1,6 +1,8 @@
 package cryptoservice.model
 
-data class GCPAccessToken(val value: String)
+data class GCPAccessToken(
+    val value: String,
+)
 
 fun GCPAccessToken.sensor() =
     GCPAccessToken(
