@@ -2,6 +2,7 @@ package cryptoservice.controller
 
 import cryptoservice.controller.models.EncryptionRequest
 import cryptoservice.model.GCPAccessToken
+import cryptoservice.model.RiScWithConfig
 import cryptoservice.service.DecryptionService
 import cryptoservice.service.EncryptionService
 import org.springframework.beans.factory.annotation.Value
@@ -21,14 +22,13 @@ class CryptoController(
     fun decryptPost(
         @RequestHeader gcpAccessToken: String,
         @RequestBody cipherText: String,
-    ): ResponseEntity<Pair<String, String>> {
+    ): ResponseEntity<RiScWithConfig> {
         val plainTextAndConfig =
             decryptionService.decryptWithSopsConfig(
                 ciphertext = cipherText,
                 gcpAccessToken = GCPAccessToken(gcpAccessToken),
                 sopsAgeKey = sopsAgePrivateKey,
             )
-
         return ResponseEntity.ok().body(plainTextAndConfig)
     }
 
