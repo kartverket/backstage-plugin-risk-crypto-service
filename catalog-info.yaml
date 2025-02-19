@@ -10,29 +10,3 @@ spec:
   lifecycle: "production"
   owner: "skvis"
   system: "ros-as-code"
----
-apiVersion: "backstage.io/v1alpha1"
-kind: "Group"
-metadata:
-  name: "security_champion_backstage-plugin-risk-crypto-service"
-  title: "Security Champion backstage-plugin-risk-crypto-service"
-spec:
-  type: "security_champion"
-  parent: "eiendom_security_champions"
-  members:
-  - "larsore"
-  children:
-  - "resource:backstage-plugin-risk-crypto-service"
----
-apiVersion: "backstage.io/v1alpha1"
-kind: "Resource"
-metadata:
-  name: "backstage-plugin-risk-crypto-service"
-  links:
-  - url: "https://github.com/kartverket/backstage-plugin-risk-crypto-service"
-    title: "backstage-plugin-risk-crypto-service på GitHub"
-spec:
-  type: "repo"
-  owner: "security_champion_backstage-plugin-risk-crypto-service"
-  dependencyOf:
-  - "component:backstage-plugin-risk-crypto-service"
