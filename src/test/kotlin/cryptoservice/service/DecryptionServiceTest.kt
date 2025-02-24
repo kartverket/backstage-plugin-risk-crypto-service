@@ -12,7 +12,6 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
-@Disabled
 class DecryptionServiceTest {
     companion object {
         // OBS! Remember to remove before committing
@@ -203,31 +202,37 @@ class DecryptionServiceTest {
         val decryptionService = DecryptionService()
     }
 
+    @Disabled
     @Test
     fun `when age key is present and shamir is 1 the ciphertext is successfully decrypted`() {
         decryptionService.decrypt(sopsFileWithShamir1, invalidGCPAccessToken, ageKey1)
     }
 
+    @Disabled
     @Test
     fun `when gcp access token is valid and shamir is 1 the ciphertext is successfully decrypted`() {
         decryptionService.decrypt(sopsFileWithShamir1, validGCPAccessToken, invalidAgeKey)
     }
 
+    @Disabled
     @Test
     fun `when age key and gcp access token is present and shamir is 2 the ciphertext is successfully decrypted`() {
         decryptionService.decrypt(sopsFileWithShamir2, validGCPAccessToken, ageKey1)
     }
 
+    @Disabled
     @Test
     fun `when age key is not present and gcp access token is valid and shamir is 2 the decryption fails`() {
         assertThrows<Exception> { decryptionService.decrypt(sopsFileWithShamir2, validGCPAccessToken, invalidAgeKey) }
     }
 
+    @Disabled
     @Test
     fun `when age and key is present but gcp access token is invalid and shamir is 2 the decryption fails`() {
         assertThrows<Exception> { decryptionService.decrypt(sopsFileWithShamir2, invalidGCPAccessToken, ageKey1) }
     }
 
+    @Disabled
     @Execution(ExecutionMode.CONCURRENT)
     @ParameterizedTest
     @MethodSource("listOfDecryptionParameters")
@@ -240,5 +245,45 @@ class DecryptionServiceTest {
             )
 
         assertThat(result).contains(clearTextPartOfContent)
+    }
+
+    @Test
+    fun `extractSopsConfig should extract sops configuration from ciphertext with shamir threshold 1`() {
+        val sopsConfig = decryptionService.extractSopsConfig(sopsFileWithShamir1)
+
+        // Verify the extracted config contains expected fields
+        assertThat(sopsConfig).contains("shamir_threshold: 1")
+        assertThat(sopsConfig).contains("gcp_kms:")
+        assertThat(
+            sopsConfig,
+        ).contains("resource_id: \"projects/spire-ros-5lmr/locations/europe-west4/keyRings/rosene-team/cryptoKeys/ros-as-code-2\"")
+        assertThat(sopsConfig).contains("age:")
+        assertThat(sopsConfig).contains("recipient: \"age1g9m644t5s95zk6px9mh2kctajqw3guuq2alntgfqu2au6fdz85lq4uupug\"")
+        // Verify it doesn't contain encrypted data fields
+        assertThat(sopsConfig).doesNotContain("ENC[AES256_GCM")
+    }
+
+    @Test
+    fun `extractSopsConfig should extract sops configuration from ciphertext with shamir threshold 2`() {
+        val sopsConfig = decryptionService.extractSopsConfig(sopsFileWithShamir2)
+
+        // Verify the extracted config contains expected fields
+        assertThat(sopsConfig).contains("shamir_threshold: 2")
+        assertThat(sopsConfig).contains("key_groups:")
+        assertThat(sopsConfig).contains("gcp_kms:")
+        assertThat(sopsConfig).contains("resource_id: \"projects/spire-ros-5lmr/locations/eur4/keyRings/ROS/cryptoKeys/ros-as-code\"")
+        assertThat(sopsConfig).contains("age:")
+        assertThat(sopsConfig).contains("recipient: \"age1g9m644t5s95zk6px9mh2kctajqw3guuq2alntgfqu2au6fdz85lq4uupug\"")
+        // Verify key_groups don't contain encrypted data fields
+        assertThat(sopsConfig).doesNotContain("enc: \"ENC[AES256_GCM")
+    }
+
+    @Test
+    fun `extractSopsConfig should throw IllegalArgumentException when sops section is missing`() {
+        val ciphertextWithoutSops = "schemaVersion: v1\ntitle: test"
+
+        assertThrows<IllegalArgumentException> {
+            decryptionService.extractSopsConfig(ciphertextWithoutSops)
+        }
     }
 }

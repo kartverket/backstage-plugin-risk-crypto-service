@@ -21,15 +21,15 @@ class CryptoController(
     fun decryptPost(
         @RequestHeader gcpAccessToken: String,
         @RequestBody cipherText: String,
-    ): ResponseEntity<String> {
-        val decryptedString =
-            decryptionService.decrypt(
+    ): ResponseEntity<Pair<String, String>> {
+        val plainTextAndConfig =
+            decryptionService.decryptWithSopsConfig(
                 ciphertext = cipherText,
                 gcpAccessToken = GCPAccessToken(gcpAccessToken),
                 sopsAgeKey = sopsAgePrivateKey,
             )
 
-        return ResponseEntity.ok().body(decryptedString)
+        return ResponseEntity.ok().body(plainTextAndConfig)
     }
 
     @PostMapping("/encrypt")
