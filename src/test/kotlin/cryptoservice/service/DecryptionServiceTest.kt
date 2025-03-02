@@ -2,7 +2,6 @@ package cryptoservice.service
 
 import cryptoservice.model.GCPAccessToken
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.parallel.Execution
@@ -11,8 +10,8 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
+import kotlin.test.Ignore
 
-@Disabled
 class DecryptionServiceTest {
     companion object {
         // OBS! Remember to remove before committing
@@ -209,16 +208,19 @@ class DecryptionServiceTest {
     }
 
     @Test
+    @Ignore
     fun `when gcp access token is valid and shamir is 1 the ciphertext is successfully decrypted`() {
         decryptionService.decrypt(sopsFileWithShamir1, validGCPAccessToken, invalidAgeKey)
     }
 
     @Test
+    @Ignore
     fun `when age key and gcp access token is present and shamir is 2 the ciphertext is successfully decrypted`() {
         decryptionService.decrypt(sopsFileWithShamir2, validGCPAccessToken, ageKey1)
     }
 
     @Test
+    @Ignore
     fun `when age key is not present and gcp access token is valid and shamir is 2 the decryption fails`() {
         assertThrows<Exception> { decryptionService.decrypt(sopsFileWithShamir2, validGCPAccessToken, invalidAgeKey) }
     }
@@ -228,6 +230,7 @@ class DecryptionServiceTest {
         assertThrows<Exception> { decryptionService.decrypt(sopsFileWithShamir2, invalidGCPAccessToken, ageKey1) }
     }
 
+    @Ignore
     @Execution(ExecutionMode.CONCURRENT)
     @ParameterizedTest
     @MethodSource("listOfDecryptionParameters")
