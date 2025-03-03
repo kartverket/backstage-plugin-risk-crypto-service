@@ -52,7 +52,25 @@ provided.
 
 # Setup
 
-## Download sops
+To run the crypto service locally you can either run it through IntelliJ or as a docker-image with docker-compose.
+We recommend running it with docker-compose as this do not require downloading a custom configured sops on your local machine.
+
+## Local setup with docker-compose
+
+To run locally with docker-compose, you first need to create the Gitignored file `.env.local` with the following contents:
+```
+spring_profiles_active=local
+SOPS_AGE_KEY=<AGE SECRET KEY USED TO ENCRYPT AND DECRYPT RISCS>
+```
+
+You can then build and run the application with 
+```shell
+docker-compose up
+```
+which starts the crypto service on port 8084.
+
+## Local setup with IntelliJ
+### Download sops
 
 To run the crypto service locally you need to have sops installed.
 
