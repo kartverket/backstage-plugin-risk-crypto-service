@@ -12,9 +12,8 @@ import java.io.File
 val compose =
     ComposeContainer(
         File("docker-compose.yaml"),
-    ).withExposedService("crypto-service", 8083)
+    ).withExposedService("crypto-service", 8080)
 
-@Disabled
 class ContainerTest {
     @Test
     fun `call encrypt`() {
@@ -22,14 +21,14 @@ class ContainerTest {
             "http://" +
                 compose.getServiceHost(
                     "crypto-service",
-                    8083,
-                ) + ":" + compose.getServicePort("crypto-service", 8083)
+                    8080,
+                ) + ":" + compose.getServicePort("crypto-service", 8080)
 
         simpleGetRequest(address)
     }
 
     private fun simpleGetRequest(url: String) {
-        val client = WebTestClient.bindToServer().baseUrl("http://localhost:8083").build()
+        val client = WebTestClient.bindToServer().baseUrl(url).build()
         client
             .get()
             .uri("/")
