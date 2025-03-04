@@ -16,6 +16,14 @@ class DecryptionService {
         sopsAgeKey: String,
     ): String =
         try {
+            if (!CryptoValidation.isValidGCPToken(gcpAccessToken.value)) {
+                throw SOPSDecryptionException("Invalid GCP Token")
+            }
+
+            if (!CryptoValidation.isValidAgePrivateKey(sopsAgeKey)) {
+                throw SOPSDecryptionException("Invalid age key")
+            }
+
             processBuilder
                 .command(
                     "sh",

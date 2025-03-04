@@ -21,6 +21,14 @@ class EncryptionService {
         riScId: String,
     ): String =
         try {
+            if (!CryptoValidation.isValidGCPToken(gcpAccessToken.value)) {
+                throw SopsEncryptionException("Invalid GCP Token", riScId)
+            }
+
+            if (!CryptoValidation.isValidSopsConfig(config)) {
+                throw SopsEncryptionException("Invalid sops config", riScId)
+            }
+
             val tempFile = File.createTempFile("sopsConfig-$riScId-${System.currentTimeMillis()}", ".yaml")
             tempFile.writeText(config)
             tempFile.deleteOnExit()

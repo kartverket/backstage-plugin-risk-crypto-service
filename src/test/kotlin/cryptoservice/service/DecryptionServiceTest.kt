@@ -16,7 +16,12 @@ class DecryptionServiceTest {
     companion object {
         // OBS! Remember to remove before committing
         val validGCPAccessToken = GCPAccessToken("ditt gyldige token")
-        val invalidGCPAccessToken = GCPAccessToken("feil")
+
+        @Suppress("ktlint:standard:max-line-length")
+        val invalidGCPAccessToken =
+            GCPAccessToken(
+                "ya29.a0AfH6SMBcmQd8eU7cR5v7gJe4OgWq44c3RdjXfz6YzO1NO6TrLskV5hAOUgGmm2Gy4W9sO5JIt.Hk6Qd9ftZY7U4rZZnSklQnQK7LvEYl1t9s5-KC4pBdwj4g7I7F5oRt6kb1mfCgQ3gH6jH4",
+            )
 
         val ageKey1 = "AGE-SECRET-KEY-18TRT94XGD8SC06JSJX5Q9PFFA9XRR0SYKNCVGVLL0EJTS93YJFSQ89A8RP"
         val ageKey2 = "AGE-SECRET-KEY-1FVTKH7URH7YY4MQCPJ3FWYJAJRJAN9U3YQNNHX7HNSNT4QAUEH6QZWSN8Y"

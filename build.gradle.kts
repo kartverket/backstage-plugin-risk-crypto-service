@@ -32,6 +32,9 @@ dependencies {
 
     implementation("io.micrometer:micrometer-registry-prometheus")
 
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.18.3")
+    implementation("com.networknt:json-schema-validator:1.0.57")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
