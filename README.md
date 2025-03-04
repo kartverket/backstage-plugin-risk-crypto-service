@@ -52,6 +52,52 @@ provided.
 
 # Setup
 
+To run the crypto service locally you can either run it through IntelliJ or as a docker-image with docker-compose.
+We recommend running it with docker-compose as this do not require downloading a custom configured sops on your local machine.
+
+## Local setup with docker-compose
+
+To run locally with docker-compose, you first need to create the Gitignored file `.env.local` with the following contents:
+```
+spring_profiles_active=local
+SOPS_AGE_KEY=<AGE SECRET KEY USED TO ENCRYPT AND DECRYPT RISCS>
+```
+
+You can then build and run the application with 
+```shell
+docker-compose up
+```
+which starts the crypto service on port 8084.
+
+## Local setup with IntelliJ
+### Download sops
+
+To run the crypto service locally you need to have sops installed.
+
+It is very easy to do with gh
+
+```sh
+brew install gh
+gh auth login
+```
+
+The current version used in crypto service has added functionality with the use of google access tokens to access the
+crypto key resources from the gcp kms.
+
+```shell
+# download the latest version
+gh release download --repo https://github.com/bekk/sops <nyeste versjon> --pattern '*.darwin.arm64'
+
+# rename the file to sops
+mv sops-v1.2.darwin.arm64 sops
+
+# make it executable
+chmod +x sops
+
+# add sops to your path
+export PATH=$PATH:<path to file>
+```
+
 ## Environment variables
 
 **SOPS_AGE_KEY** is an environment variable necessary to run the application with sops. The sops age key is the private

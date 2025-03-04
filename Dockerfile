@@ -1,8 +1,8 @@
-FROM eclipse-temurin:21.0.2_13-jre-alpine as build
+FROM eclipse-temurin:23.0.1_11-jre-alpine as build
 COPY . .
 RUN ./gradlew build -x test
 
-FROM eclipse-temurin:21
+FROM eclipse-temurin:23
 
 RUN mkdir -p /app /app/logs /app/tmp
 
@@ -11,9 +11,9 @@ ARG SOPS_ARM64="https://github.com/bekk/sops/releases/download/v3/sops-v3.linux.
 
 ARG TARGETARCH
 RUN if [ "$TARGETARCH" = "amd64" ]; then \
-      curl -L $SOPS_AMD64 -o /usr/local/bin/sops; \
+      wget $SOPS_AMD64 -O /usr/local/bin/sops; \
     elif [ "$TARGETARCH" = "arm64" ]; then \
-      curl -L $SOPS_ARM64 -o /usr/local/bin/sops; \
+      wget $SOPS_ARM64 -O /usr/local/bin/sops; \
     else \
       echo "Unsupported architecture"; \
       exit 1; \

@@ -38,7 +38,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '21'
+          java-version: '23'
           architecture: 'x64'
 
       - name: Setup Gradle
@@ -102,17 +102,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Run Pharos"
-        uses: kartverket/pharos@v0.1.5
+        uses: kartverket/pharos@v0.3.1
         with:
           image_url: ${{ needs.build.outputs.image_url }}
 
-  sandbox-deploy-argo:
-    name: Deploy to sandbox
+  dev-deploy-argo:
+    name: Deploy to dev
     if: github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     environment:
-      name: sandbox
+      name: dev
     permissions:
       id-token: write
     steps:
@@ -129,7 +129,7 @@ jobs:
           token: ${{ steps.octo-sts.outputs.token }}
       - name: Update version
         run: |
-          echo "\"${{ needs.build.outputs.image_url }}\"" > "env/atgcp1-sandbox/ros-plugin-main/${{ env.ARGO_VERSION_FILE }}"
+          echo "\"${{ needs.build.outputs.image_url }}\"" > "env/atgcp1-dev/ros-plugin-main/${{ env.ARGO_VERSION_FILE }}"
           git config --global user.email "noreply@kartverket.no"
           git config --global user.name "Backstage Plugin Risk Scorecard Backend CI"
           git commit -am "Update ros-backend ${{ env.ARGO_VERSION_FILE }}"
@@ -138,7 +138,7 @@ jobs:
   prod-deploy-argo:
     name: Deploy to prod
     if: github.ref == 'refs/heads/main'
-    needs: [build, sandbox-deploy-argo]
+    needs: [build, dev-deploy-argo]
     runs-on: ubuntu-latest
     environment:
       name: prod
