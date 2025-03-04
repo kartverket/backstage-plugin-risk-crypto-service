@@ -1,8 +1,9 @@
-FROM eclipse-temurin:23.0.1_11-jre-alpine as build
+# FROM eclipse-temurin:23.0.1_11-jre-alpine as build
+FROM amazoncorretto:23.0.2-alpine as build
 COPY . .
 RUN ./gradlew build -x test
 
-FROM eclipse-temurin:23
+FROM amazoncorretto:23.0.2-alpine
 
 RUN mkdir -p /app /app/logs /app/tmp
 
