@@ -2,7 +2,6 @@ package cryptoservice.service
 
 import cryptoservice.model.GCPAccessToken
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.parallel.Execution
@@ -11,13 +10,18 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
+import kotlin.test.Ignore
 
-@Disabled
 class DecryptionServiceTest {
     companion object {
         // OBS! Remember to remove before committing
         val validGCPAccessToken = GCPAccessToken("ditt gyldige token")
-        val invalidGCPAccessToken = GCPAccessToken("feil")
+
+        @Suppress("ktlint:standard:max-line-length")
+        val invalidGCPAccessToken =
+            GCPAccessToken(
+                "ya29.a0AfH6SMBcmQd8eU7cR5v7gJe4OgWq44c3RdjXfz6YzO1NO6TrLskV5hAOUgGmm2Gy4W9sO5JIt.Hk6Qd9ftZY7U4rZZnSklQnQK7LvEYl1t9s5-KC4pBdwj4g7I7F5oRt6kb1mfCgQ3gH6jH4",
+            )
 
         val ageKey1 = "AGE-SECRET-KEY-18TRT94XGD8SC06JSJX5Q9PFFA9XRR0SYKNCVGVLL0EJTS93YJFSQ89A8RP"
         val ageKey2 = "AGE-SECRET-KEY-1FVTKH7URH7YY4MQCPJ3FWYJAJRJAN9U3YQNNHX7HNSNT4QAUEH6QZWSN8Y"
@@ -209,16 +213,19 @@ class DecryptionServiceTest {
     }
 
     @Test
+    @Ignore
     fun `when gcp access token is valid and shamir is 1 the ciphertext is successfully decrypted`() {
         decryptionService.decrypt(sopsFileWithShamir1, validGCPAccessToken, invalidAgeKey)
     }
 
     @Test
+    @Ignore
     fun `when age key and gcp access token is present and shamir is 2 the ciphertext is successfully decrypted`() {
         decryptionService.decrypt(sopsFileWithShamir2, validGCPAccessToken, ageKey1)
     }
 
     @Test
+    @Ignore
     fun `when age key is not present and gcp access token is valid and shamir is 2 the decryption fails`() {
         assertThrows<Exception> { decryptionService.decrypt(sopsFileWithShamir2, validGCPAccessToken, invalidAgeKey) }
     }
@@ -228,6 +235,7 @@ class DecryptionServiceTest {
         assertThrows<Exception> { decryptionService.decrypt(sopsFileWithShamir2, invalidGCPAccessToken, ageKey1) }
     }
 
+    @Ignore
     @Execution(ExecutionMode.CONCURRENT)
     @ParameterizedTest
     @MethodSource("listOfDecryptionParameters")
