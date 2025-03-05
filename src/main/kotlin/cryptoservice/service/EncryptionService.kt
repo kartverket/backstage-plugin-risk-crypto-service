@@ -4,16 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import cryptoservice.exception.exceptions.SopsEncryptionException
+import cryptoservice.model.AgeEntry
 import cryptoservice.model.GCPAccessToken
+import cryptoservice.model.GcpKmsEntry
 import cryptoservice.model.KeyGroup
 import cryptoservice.model.SopsConfig
-import cryptoservice.model.GcpKmsEntry
-import cryptoservice.model.AgeEntry
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.io.BufferedReader
-import java.io.InputStreamReader
 import java.io.File
+import java.io.InputStreamReader
 
 @Service
 class EncryptionService {
@@ -25,60 +25,61 @@ class EncryptionService {
     private val backendPublicKey = "age18e0t6ve0vdxqzzjt7rxf0r6vzc37fhs5cad2qz40r02c3spzgvvq8uxz23"
     private val securityPlatformPublicKey = "age1kjpgclkjev08aa8l2uy277gn0cngrkrkazt240405ezqywkm5axqt3d3tq"
 
-    private fun findGcpKmsEntry(keyGroups: List<KeyGroup>): GcpKmsEntry {
-        return keyGroups.flatMap { it.gcp_kms ?: emptyList() }.first()
-    }
+    private fun findGcpKmsEntry(keyGroups: List<KeyGroup>): GcpKmsEntry = keyGroups.flatMap { it.gcp_kms ?: emptyList() }.first()
 
     private fun buildSopsKeyArguments(config: SopsConfig): List<String> {
         // Create a set of our predefined keys for easy comparison
         val predefinedKeys = setOf(securityTeamPublicKey, backendPublicKey, securityPlatformPublicKey)
-        
-        // Find public keys from config that aren't our predefined keys
-        val configPublicKeys = config.key_groups
-            .flatMap { it.age ?: emptyList() }
-            .map { it.recipient }
-            .filter { it !in predefinedKeys }
 
-        val keyGroups = listOfNotNull(
-            KeyGroup(
-                age = listOf(AgeEntry(recipient = securityTeamPublicKey)),
-                gcp_kms = listOf(GcpKmsEntry(resource_id = findGcpKmsEntry(config.key_groups).resource_id))
-            ),
-            KeyGroup(
-                age = listOf(
-                    AgeEntry(recipient = backendPublicKey),
-                    AgeEntry(recipient = securityPlatformPublicKey)
-                )
-            ),
-            if (configPublicKeys.isNotEmpty()) {
+        // Find public keys from config that aren't our predefined keys
+        val configPublicKeys =
+            config.key_groups
+                .flatMap { it.age ?: emptyList() }
+                .map { it.recipient }
+                .filter { it !in predefinedKeys }
+
+        val keyGroups =
+            listOfNotNull(
                 KeyGroup(
-                    age = configPublicKeys.map { AgeEntry(recipient = it) }
-                )
-            } else {
-                null
-            }
-        )
-        
+                    age = listOf(AgeEntry(recipient = securityTeamPublicKey)),
+                    gcp_kms = listOf(GcpKmsEntry(resource_id = findGcpKmsEntry(config.key_groups).resource_id)),
+                ),
+                KeyGroup(
+                    age =
+                        listOf(
+                            AgeEntry(recipient = backendPublicKey),
+                            AgeEntry(recipient = securityPlatformPublicKey),
+                        ),
+                ),
+                if (configPublicKeys.isNotEmpty()) {
+                    KeyGroup(
+                        age = configPublicKeys.map { AgeEntry(recipient = it) },
+                    )
+                } else {
+                    null
+                },
+            )
+
         val keyArgs = mutableListOf<String>()
-        
+
         // Collect all GCP KMS keys
         val gcpKmsKeys = keyGroups.mapNotNull { it.gcp_kms }.flatten().map { it.resource_id }
         if (gcpKmsKeys.isNotEmpty()) {
             keyArgs.add("--gcp-kms")
             keyArgs.add(gcpKmsKeys.joinToString(","))
         }
-        
+
         // Collect all Age keys
         val ageKeys = keyGroups.mapNotNull { it.age }.flatten().map { it.recipient }
         if (ageKeys.isNotEmpty()) {
             keyArgs.add("--age")
             keyArgs.add(ageKeys.joinToString(","))
         }
-        
+
         if (keyArgs.isEmpty()) {
             throw SopsEncryptionException("No valid encryption keys found in configuration", "")
         }
-        
+
         return keyArgs
     }
 
@@ -90,45 +91,52 @@ class EncryptionService {
     ): String =
         try {
             // Create key groups configuration
-            val keyGroups = listOfNotNull(
-                mapOf(
-                    "age" to listOf(securityTeamPublicKey),
-                    "gcp_kms" to listOf(
-                        mapOf("resource_id" to findGcpKmsEntry(config.key_groups).resource_id)
-                    )
-                ),
-                mapOf(
-                    "age" to listOf(backendPublicKey, securityPlatformPublicKey)
-                ),
-                if (config.key_groups.flatMap { it.age ?: emptyList() }
-                        .map { it.recipient }
-                        .filter { it !in setOf(securityTeamPublicKey, backendPublicKey, securityPlatformPublicKey) }
-                        .isNotEmpty()
-                ) {
+            val keyGroups =
+                listOfNotNull(
                     mapOf(
-                        "age" to config.key_groups
+                        "age" to listOf(securityTeamPublicKey),
+                        "gcp_kms" to
+                            listOf(
+                                mapOf("resource_id" to findGcpKmsEntry(config.key_groups).resource_id),
+                            ),
+                    ),
+                    mapOf(
+                        "age" to listOf(backendPublicKey, securityPlatformPublicKey),
+                    ),
+                    if (config.key_groups
                             .flatMap { it.age ?: emptyList() }
-                            .filter { it.recipient !in setOf(securityTeamPublicKey, backendPublicKey, securityPlatformPublicKey) }
                             .map { it.recipient }
-                    )
-                } else null
-            )
+                            .filter { it !in setOf(securityTeamPublicKey, backendPublicKey, securityPlatformPublicKey) }
+                            .isNotEmpty()
+                    ) {
+                        mapOf(
+                            "age" to
+                                config.key_groups
+                                    .flatMap { it.age ?: emptyList() }
+                                    .filter { it.recipient !in setOf(securityTeamPublicKey, backendPublicKey, securityPlatformPublicKey) }
+                                    .map { it.recipient },
+                        )
+                    } else {
+                        null
+                    },
+                )
 
             // Create SOPS config
-            val sopsConfig = mapOf(
-                "creation_rules" to listOf(
-                    mapOf(
-                        "shamir_threshold" to config.shamir_threshold,
-                        "key_groups" to keyGroups
-                    )
+            val sopsConfig =
+                mapOf(
+                    "creation_rules" to
+                        listOf(
+                            mapOf(
+                                "shamir_threshold" to config.shamir_threshold,
+                                "key_groups" to keyGroups,
+                            ),
+                        ),
                 )
-            )
 
             // Create temporary config file
             val tempConfigFile = File.createTempFile("sopsConfig-$riScId-${System.currentTimeMillis()}", ".yaml")
             tempConfigFile.writeText(yamlMapper.writeValueAsString(sopsConfig))
             tempConfigFile.deleteOnExit()
-
 
             processBuilder
                 .command(
@@ -139,7 +147,7 @@ class EncryptionService {
                         "--input-type json " +
                         "--output-type yaml " +
                         "--config ${tempConfigFile.absolutePath} " +
-                        "/dev/stdin"
+                        "/dev/stdin",
                 ).start()
                 .run {
                     outputStream.buffered().also { it.write(text.toByteArray()) }.close()

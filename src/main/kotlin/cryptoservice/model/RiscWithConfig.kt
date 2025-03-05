@@ -1,6 +1,6 @@
-package cryptoservice.model
+@file:Suppress("ktlint:standard:filename")
 
-import cryptoservice.model.SopsConfig
+package cryptoservice.model
 
 data class RiScWithConfig(
     val riSc: String,

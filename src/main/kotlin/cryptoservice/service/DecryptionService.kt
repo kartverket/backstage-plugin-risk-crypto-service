@@ -2,8 +2,8 @@ package cryptoservice.service
 
 import cryptoservice.exception.exceptions.SOPSDecryptionException
 import cryptoservice.model.GCPAccessToken
-import cryptoservice.model.SopsConfig
 import cryptoservice.model.RiScWithConfig
+import cryptoservice.model.SopsConfig
 import org.springframework.stereotype.Service
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -18,12 +18,13 @@ class DecryptionService {
         val sopsConfig = YamlUtils.objectMapper.treeToValue(sopsNode, SopsConfig::class.java)
         val cleanConfig =
             sopsConfig.copy(
-                key_groups = sopsConfig.key_groups.map { keyGroup ->
-                    keyGroup.copy(
-                        gcp_kms = keyGroup.gcp_kms?.map { it.copy(enc = null) },
-                        age = keyGroup.age?.map { it.copy(enc = null) }
-                    )
-                },
+                key_groups =
+                    sopsConfig.key_groups.map { keyGroup ->
+                        keyGroup.copy(
+                            gcp_kms = keyGroup.gcp_kms?.map { it.copy(enc = null) },
+                            age = keyGroup.age?.map { it.copy(enc = null) },
+                        )
+                    },
                 shamir_threshold = sopsConfig.shamir_threshold,
                 lastmodified = sopsConfig.lastmodified,
                 version = sopsConfig.version,
