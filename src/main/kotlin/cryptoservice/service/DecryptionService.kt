@@ -40,7 +40,7 @@ class DecryptionService {
         try {
             val sopsConfig = extractSopsConfig(ciphertext)
             val plaintext = decrypt(ciphertext, gcpAccessToken, sopsAgeKey)
-            RiScWithConfig(plaintext, false, "1.0", sopsConfig)
+            RiScWithConfig(plaintext, sopsConfig)
         } catch (e: Exception) {
             throw e
         }
