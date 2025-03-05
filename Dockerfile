@@ -1,8 +1,8 @@
-FROM eclipse-temurin:23.0.1_11-jre-alpine as build
+FROM eclipse-temurin:23.0.2_7-jdk-alpine-3.21 as build
 COPY . .
 RUN ./gradlew build -x test
 
-FROM eclipse-temurin:23
+FROM eclipse-temurin:23.0.2_7-jre-alpine-3.21
 
 RUN mkdir -p /app /app/logs /app/tmp
 
