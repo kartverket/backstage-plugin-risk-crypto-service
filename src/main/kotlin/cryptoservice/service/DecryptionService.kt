@@ -55,7 +55,7 @@ class DecryptionService {
                 throw SOPSDecryptionException("Invalid GCP Token")
             }
 
-            if (!CryptoValidation.isValidAgePrivateKey(sopsAgeKey)) {
+            if (!CryptoValidation.isValidAgeSecretKey(sopsAgeKey)) {
                 throw SOPSDecryptionException("Invalid age key")
             }
 

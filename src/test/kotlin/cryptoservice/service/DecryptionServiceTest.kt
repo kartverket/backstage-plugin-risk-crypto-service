@@ -21,7 +21,7 @@ class DecryptionServiceTest {
         @Suppress("ktlint:standard:max-line-length")
         val invalidGCPAccessToken =
             GCPAccessToken(
-                "ya29.a0AfH6SMBcmQd8eU7cR5v7gJe4OgWq44c3RdjXfz6YzO1NO6TrLskV5hAOUgGmm2Gy4W9sO5JIt.Hk6Qd9ftZY7U4rZZnSklQnQK7LvEYl1t9s5-KC4pBdwj4g7I7F5oRt6kb1mfCgQ3gH6jH4",
+                "ya29.a0AeXRPp49V58XuoU6xfdO2qWndhdnExfAt97odE9Crs5PWgXwzc9TN2xbaQyxAsY8tDhRva8TPMGcMPlhCw21NC3nXMR-ROa-TW5VQT6z2bJZD1VDDZJmBQpbMg0_ZISAwB7qiW97eGRM4Pt2nqRkMJKFxAffieFYG8bJmrPkyeO8bgaCgYKAUgSARISFQHGX2MiCvLSwEAjMDXyiIWIkWSiHA0181",
             )
 
         val ageKey1 = "AGE-SECRET-KEY-18TRT94XGD8SC06JSJX5Q9PFFA9XRR0SYKNCVGVLL0EJTS93YJFSQ89A8RP"
