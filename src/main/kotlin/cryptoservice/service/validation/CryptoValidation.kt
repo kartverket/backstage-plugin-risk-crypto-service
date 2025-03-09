@@ -1,5 +1,6 @@
-package cryptoservice.service
+package cryptoservice.service.validation
 
+import cryptoservice.service.DecryptionService
 import org.slf4j.LoggerFactory
 import java.util.regex.Pattern
 

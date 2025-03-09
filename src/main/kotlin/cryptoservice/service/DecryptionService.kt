@@ -4,6 +4,7 @@ import cryptoservice.exception.exceptions.SOPSDecryptionException
 import cryptoservice.model.GCPAccessToken
 import cryptoservice.model.RiScWithConfig
 import cryptoservice.model.SopsConfig
+import cryptoservice.service.validation.CryptoValidation
 import org.springframework.stereotype.Service
 import java.io.BufferedReader
 import java.io.InputStreamReader

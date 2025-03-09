@@ -1,4 +1,4 @@
-package cryptoservice.service
+package cryptoservice.service.validation
 
 import java.util.Locale
 

@@ -9,6 +9,7 @@ import cryptoservice.model.GCPAccessToken
 import cryptoservice.model.GcpKmsEntry
 import cryptoservice.model.KeyGroup
 import cryptoservice.model.SopsConfig
+import cryptoservice.service.validation.CryptoValidation
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.io.BufferedReader
