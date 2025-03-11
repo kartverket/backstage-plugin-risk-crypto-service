@@ -95,6 +95,10 @@ class EncryptionService {
                 throw SopsEncryptionException("Invalid GCP Token", riScId)
             }
 
+            if (!CryptoValidation.isValidRiscId(riScId)) {
+                throw SopsEncryptionException("Invalid RiSc ID", riScId)
+            }
+
             // Create key groups configuration
             val keyGroups =
                 listOfNotNull(
