@@ -13,7 +13,9 @@ name: "CodeQL Advanced"
 
 on:
   push:
-    branches: [ "main","remedy-execution-vulnerability" ]
+    branches:
+      - main
+      - remedy-execution-vulnerability
   pull_request:
     branches: [ "main" ]
   schedule:
