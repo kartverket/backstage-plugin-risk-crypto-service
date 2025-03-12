@@ -95,10 +95,6 @@ class EncryptionService {
                 throw SopsEncryptionException("Invalid GCP Token", riScId)
             }
 
-            if (!CryptoValidation.isValidRiscId(riScId)) {
-                throw SopsEncryptionException("Invalid RiSc ID", riScId)
-            }
-
             // Create key groups configuration
             val keyGroups =
                 listOfNotNull(
@@ -143,7 +139,8 @@ class EncryptionService {
                 )
 
             // Create temporary config file
-            val tempConfigFile = File.createTempFile("sopsConfig-$riScId-${System.currentTimeMillis()}", ".yaml")
+            val prefix = randomBech32("sopsConfig-", 6) + System.currentTimeMillis()
+            val tempConfigFile = File.createTempFile(prefix, ".yaml")
             tempConfigFile.writeText(yamlMapper.writeValueAsString(sopsConfig))
             tempConfigFile.deleteOnExit()
 

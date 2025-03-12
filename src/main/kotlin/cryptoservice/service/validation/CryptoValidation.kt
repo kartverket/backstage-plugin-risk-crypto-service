@@ -19,15 +19,6 @@ object CryptoValidation {
         return true
     }
 
-    fun isValidRiscId(id: String): Boolean {
-        if (Pattern.matches("^\\S+$", id)) {
-            logger.debug("Invalid RiscId. Cannot contain whitespace")
-            return false
-        }
-
-        return true
-    }
-
     fun isValidAgeSecretKey(sopsAgeKey: String): Boolean {
         val hrp = "age-secret-key-"
 
