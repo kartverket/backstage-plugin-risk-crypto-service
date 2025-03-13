@@ -96,10 +96,9 @@ chmod +x sops
 
 # add sops to your path
 export PATH=$PATH:<path to file>
-done
 ```
 
-### Oppdatere Bekk sin sops-versjon før versjon 3.10
+### Oppdatere Bekk sin sops-versjon før versjon 3.10 (NB! IKKE KVALITETSSIKRET!)
 Det finnes en [PR fra Maren Ringsby](https://github.com/getsops/sops/pull/1578) for å legge til støtte for bruk av GCP-tokens mot GCP KMS. 
 Etter planen blir den med i 3.10-versjon av sops. 
 
