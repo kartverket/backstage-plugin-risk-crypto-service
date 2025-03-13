@@ -82,6 +82,21 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
+          push: false
+          load: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Execute Gradle sops-smoke-test
+        env:
+          CRYPTO_SERVICE_CONTAINER: ${{ steps.meta.outputs.tags }}
+        run: ./gradlew sops-smoke-test:test
+
+      - name: Build docker and push
+        id: build-docker
+        uses: docker/build-push-action@v5
+        with:
+          context: .
           push: ${{ !github.event.pull_request.draft }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

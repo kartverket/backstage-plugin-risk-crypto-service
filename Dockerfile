@@ -1,4 +1,4 @@
-FROM eclipse-temurin:23.0.1_11-jre-alpine as build
+FROM eclipse-temurin:23-jdk AS build
 COPY . .
 RUN ./gradlew build -x test
 
