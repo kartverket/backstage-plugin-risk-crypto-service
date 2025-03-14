@@ -57,11 +57,16 @@ We recommend running it with docker-compose as this do not require downloading a
 
 ## Local setup with docker-compose
 
-To run locally with docker-compose, you first need to create the Gitignored file `.env.local` with the following contents:
+To run locally with docker-compose, you first need to create the git-ignored file `.env` with the following contents:
 ```
 spring_profiles_active=local
 SOPS_AGE_KEY=<AGE SECRET KEY USED TO ENCRYPT AND DECRYPT RISCS>
+SECURITY_TEAM_PUBLIC_KEY=<ORGNIZATION SPESIFIC PUBLIC KEY>
+SECURITY_PLATFORM_PUBLIC_KEY=<ORGNIZATION SPESIFIC PUBLIC KEY2>
+BACKEND_PUBLIC_KEY=<ORGNIZATION SPESIFIC PUBLIC KEY FOR BACKEND>
 ```
+
+If you need access to environment-variables, ask a colleage.
 
 You can then build and run the application with 
 ```shell
