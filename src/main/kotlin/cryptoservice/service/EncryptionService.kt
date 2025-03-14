@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import cryptoservice.exception.exceptions.SopsEncryptionException
 import cryptoservice.model.GCPAccessToken
 import cryptoservice.model.SopsConfig
+import cryptoservice.service.validation.CryptoValidation
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Service
@@ -31,6 +32,10 @@ class EncryptionService {
         riScId: String,
     ): String =
         try {
+            if (!CryptoValidation.isValidGCPToken(gcpAccessToken.value)) {
+                throw SopsEncryptionException("Invalid GCP Token", riScId)
+            }
+
             // Create key groups configuration
             val keyGroups =
                 listOfNotNull(
@@ -64,7 +69,8 @@ class EncryptionService {
                 )
 
             // Create temporary config file
-            val tempConfigFile = File.createTempFile("sopsConfig-$riScId-${System.currentTimeMillis()}", ".yaml")
+            val prefix = randomBech32("sopsConfig-", 6) + System.currentTimeMillis()
+            val tempConfigFile = File.createTempFile(prefix, ".yaml")
             tempConfigFile.writeText(yamlMapper.writeValueAsString(sopsConfig))
             tempConfigFile.deleteOnExit()
 

@@ -5,6 +5,7 @@ import cryptoservice.model.GCPAccessToken
 import cryptoservice.model.RiScWithConfig
 import cryptoservice.model.SopsConfig
 import org.springframework.boot.context.properties.ConfigurationProperties
+import cryptoservice.service.validation.CryptoValidation
 import org.springframework.stereotype.Service
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -67,6 +68,14 @@ class DecryptionService {
         sopsAgeKey: String,
     ): String =
         try {
+            if (!CryptoValidation.isValidGCPToken(gcpAccessToken.value)) {
+                throw SOPSDecryptionException("Invalid GCP Token")
+            }
+
+            if (!CryptoValidation.isValidAgeSecretKey(sopsAgeKey)) {
+                throw SOPSDecryptionException("Invalid age key")
+            }
+
             processBuilder
                 .command(
                     listOf(

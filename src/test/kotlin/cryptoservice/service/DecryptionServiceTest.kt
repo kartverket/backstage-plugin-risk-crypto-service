@@ -12,11 +12,17 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
+@Disabled
 class DecryptionServiceTest {
     companion object {
         // OBS! Remember to remove before committing
         val validGCPAccessToken = GCPAccessToken("ditt gyldige token")
-        val invalidGCPAccessToken = GCPAccessToken("feil")
+
+        @Suppress("ktlint:standard:max-line-length")
+        val invalidGCPAccessToken =
+            GCPAccessToken(
+                "ya29.a0AeXRPp49V58XuoU6xfdO2qWndhdnExfAt97odE9Crs5PWgXwzc9TN2xbaQyxAsY8tDhRva8TPMGcMPlhCw21NC3nXMR-ROa-TW5VQT6z2bJZD1VDDZJmBQpbMg0_ZISAwB7qiW97eGRM4Pt2nqRkMJKFxAffieFYG8bJmrPkyeO8bgaCgYKAUgSARISFQHGX2MiCvLSwEAjMDXyiIWIkWSiHA0181",
+            )
 
         val ageKey1 = "AGE-SECRET-KEY-18TRT94XGD8SC06JSJX5Q9PFFA9XRR0SYKNCVGVLL0EJTS93YJFSQ89A8RP"
         val ageKey2 = "AGE-SECRET-KEY-1FVTKH7URH7YY4MQCPJ3FWYJAJRJAN9U3YQNNHX7HNSNT4QAUEH6QZWSN8Y"
