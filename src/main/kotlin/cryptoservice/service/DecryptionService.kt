@@ -29,16 +29,16 @@ class DecryptionService {
             YamlUtils.objectMapper.treeToValue(sopsNode, SopsConfig::class.java)
         val cleanConfig =
             sopsConfig.copy(
-                gcpKms =
-                    sopsConfig.key_groups.flatMap { it.gcp_kms ?: emptyList() },
+                gcp_kms =
+                    sopsConfig.key_groups?.flatMap { it.gcp_kms ?: emptyList() },
                 age =
                     sopsConfig
                         .key_groups
-                        .flatMap { it.age ?: emptyList() }
-                        .filter {
+                        ?.flatMap { it.age ?: emptyList() }
+                        ?.filter {
                             it.recipient != securityTeamPublicKey
-                        }.filter { it.recipient != backendPublicKey }
-                        .filter {
+                        }?.filter { it.recipient != backendPublicKey }
+                        ?.filter {
                             it.recipient != securityPlatformPublicKey
                         },
                 shamir_threshold = sopsConfig.shamir_threshold,

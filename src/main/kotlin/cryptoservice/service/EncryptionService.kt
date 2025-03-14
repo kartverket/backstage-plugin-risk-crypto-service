@@ -43,7 +43,7 @@ class EncryptionService {
                         "age" to listOf(securityTeamPublicKey),
                         "gcp_kms" to
                             listOf(
-                                mapOf("resource_id" to config.gcpKms?.first()?.resource_id),
+                                mapOf("resource_id" to config.gcp_kms?.first()?.resource_id),
                             ),
                     ),
                     mapOf(
