@@ -57,11 +57,16 @@ We recommend running it with docker-compose as this do not require downloading a
 
 ## Local setup with docker-compose
 
-To run locally with docker-compose, you first need to create the Gitignored file `.env.local` with the following contents:
+To run locally with docker-compose, you first need to create the git-ignored file `.env` with the following contents:
 ```
 spring_profiles_active=local
 SOPS_AGE_KEY=<AGE SECRET KEY USED TO ENCRYPT AND DECRYPT RISCS>
+SECURITY_TEAM_PUBLIC_KEY=<ORGNIZATION SPESIFIC PUBLIC KEY>
+SECURITY_PLATFORM_PUBLIC_KEY=<ORGNIZATION SPESIFIC PUBLIC KEY2>
+BACKEND_PUBLIC_KEY=<ORGNIZATION SPESIFIC PUBLIC KEY FOR BACKEND>
 ```
+
+If you need access to environment-variables, ask a colleage.
 
 You can then build and run the application with 
 ```shell
@@ -97,6 +102,33 @@ chmod +x sops
 # add sops to your path
 export PATH=$PATH:<path to file>
 ```
+
+### Oppdatere Bekk sin sops-versjon før versjon 3.10 (NB! IKKE KVALITETSSIKRET!)
+Det finnes en [PR fra Maren Ringsby](https://github.com/getsops/sops/pull/1578) for å legge til støtte for bruk av GCP-tokens mot GCP KMS. 
+Etter planen blir den med i 3.10-versjon av sops. 
+
+Inntil det må Bekk sin sops versjon holdes i sync med utviklingen i sops. Her er skrittene:
+
+#### Oppdater Maren sin branch (lokalt)
+1. `git clone https://github.com/marensofier/sops.git maren-sops` // Last ned maren sitt repo
+2. `cd maren-sops` 
+3. `git checkout add_access_token` //Bytt til branchen med endringen
+3. `git remote add upstream https://github.com/getsops/sops.git` // Lag remote til sops
+4. `git fetch upstream` // Hent ned siste versjon av sops
+5. `git pull upstream main` // Merge inn endringer fra originalen. Her er det sikkert konflikter i avhengigheter som må fikses
+
+#### Oppdater Bekk sin versjon til å bli maken til den oppdaterte versjonen til Maren    
+1. `cd ..` // Gå et hakk opp 
+2. `git clone https://github.com/bekk/sops.git bekk-sops` // Last ned Bekk sin versjon av sops
+3. `cd bekk-sops`
+4. `git remote add maren-sops ../maren-sops/.git` // Lag en remote til vår lokale maren-sops
+5. `git fetch maren-sops` // Hent alle brancher
+5. `git branch --track add_access_token maren-sops/add_access_token` // Lag en lokal branch av maren-sops sin main
+6. `git checkout add_access_token` // Svitsje til branchen som har riktigst sops nå
+7. `git merge -s ours main` // merge med bekk-sops sin main, men behold alt fra maren-sops-main
+8. `git checkout main` // tilbake til bekk-sops sin main
+9. `git merge add_access_token` // få main til å se ut som maren-sops-main
+10. `git push` // direkte push på main, som KAN stoppes av github-regler (i så fall gå via en PR)
 
 ## Environment variables
 
