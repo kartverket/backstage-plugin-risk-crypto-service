@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import cryptoservice.service.validation.Bech32
+import java.security.SecureRandom
 
 val sopsCmd: List<String> = listOf("sops")
 val encrypt: List<String> = listOf("encrypt")
@@ -33,4 +35,17 @@ object YamlUtils {
             .setSerializationInclusion(JsonInclude.Include.NON_NULL)
             .registerKotlinModule()
             .writeValueAsString(t)
+}
+
+fun randomBech32(
+    prefix: String,
+    numOfChars: Int,
+): String {
+    val secureRandom = SecureRandom()
+    val bytes =
+        (0..numOfChars - 1)
+            .map { secureRandom.nextInt(31).toByte() }
+            .fold(ByteArray(0), { acc, b -> acc + b })
+
+    return Bech32.encode(prefix, bytes)
 }
