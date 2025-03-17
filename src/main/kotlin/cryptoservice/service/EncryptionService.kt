@@ -52,7 +52,8 @@ class EncryptionService {
                     mapOf(
                         "age" to
                             config.age
-                                ?.filter { it.recipient !in setOf(securityTeamPublicKey, backendPublicKey, securityPlatformPublicKey) },
+                                ?.map { it.recipient }
+                                ?.filter { it !in setOf(securityTeamPublicKey, backendPublicKey, securityPlatformPublicKey) },
                     ),
                 )
 
