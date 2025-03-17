@@ -22,5 +22,11 @@ RUN if [ "$TARGETARCH" = "amd64" ]; then \
 
 COPY --from=build /build/libs/*.jar /app/backend.jar
 
+# Add non-root user and change permissions.
+RUN useradd user && chown -R user:user /app /app/logs /app/tmp
+
+# Switch to non-root user.
+USER user
+
 EXPOSE 8080 8081
 ENTRYPOINT ["java", "-jar", "/app/backend.jar"]
