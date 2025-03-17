@@ -1,4 +1,4 @@
-name: Build and deploy crypto service to Cloud Run
+name: Build and deploy to Spire Cloud Run
 on:
   push:
     paths-ignore:
@@ -6,58 +6,53 @@ on:
       - README**
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 env:
-  REGISTRY: europe-north1-docker.pkg.dev
-  IMAGE_OWNER: kv-ros
-  GCP_PROJECT: spire-ros-5lmr
   IMAGE_NAME: ${{ github.repository }}
+  PROJECT_ID: 'spire-ros-5lmr'
+  AR_REPO_LOCATION: 'europe-north1'
+  AR_URL: 'europe-north1-docker.pkg.dev/spire-ros-5lmr/risc-plugin'
+  SERVICE_ACCOUNT: 'risc-plugin-github-actions@spire-ros-5lmr.iam.gserviceaccount.com'
+  WORKLOAD_IDENTITY_PROVIDER: 'projects/457384642040/locations/global/workloadIdentityPools/github-actions-pool/providers/github'
+
+
+defaults:
+  run:
+    shell: bash
 
 jobs:
-  docker_build_and_push_to_gcp:
+  push_to_ar:
     name: 'Docker build and push to GCP'
-    runs-on: ubuntu-latest
     permissions:
-      contents: read
-      id-token: write
+      contents: 'read'
+      id-token: 'write'
+    runs-on: ubuntu-latest
     steps:
-      - uses: 'actions/checkout@v4'
+      - name: Checkout
+        uses: actions/checkout@v2
 
-      - name: Authenticate to Google Cloud
-        id: auth
+      - id: auth
+        name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v2'
         with:
-          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_JSON_KEY }}
+          service_account: ${{ env.SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
 
-      # To optionally display info about current gcloud environment
-      - name: Set up Cloud SDK
-        uses: "google-github-actions/setup-gcloud@v1"
+      - name: Configure Docker to use the gcloud command-line tool as a credential helper
+        run: gcloud auth configure-docker ${{ env.AR_REPO_LOCATION }}-docker.pkg.dev --quiet
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@f95db51fddba0c2d1ec667646a06c2ce06100226 # v3.0.0
 
-      - name: Use gcloud CLI
-        run: "gcloud info"
+      - name: Build the Docker image
+        run: |
+          docker build -t "${{ env.AR_URL }}/${{ env.IMAGE_NAME }}:${{ github.sha }}" .
 
-      # Auth Docker to access the artifact registry
-      - name: "Docker auth"
-        run: |-
-          gcloud auth configure-docker ${{ env.REGISTRY }} --quiet
-
-      - name: Login to GAR
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: _json_key
-          password: ${{ secrets.GCP_SERVICE_ACCOUNT_JSON_KEY }}
-
-      - name: Push to Google Artifact Registry
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: Dockerfile
-          push: true
-          tags: |
-            ${{ env.REGISTRY }}/${{ env.GCP_PROJECT }}/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:latest
-          platforms: linux/amd64,linux/arm64
-
+      - name: Push the Docker image to Google Artifact Registry
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            docker push "${{ env.AR_URL }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          fi
