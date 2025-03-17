@@ -3,18 +3,18 @@ package cryptoservice.model
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class SopsConfig(
-    @JsonProperty("shamir_threshold") val shamir_threshold: Int,
-    @JsonProperty("key_groups") val key_groups: List<KeyGroup>?,
-    @JsonProperty("kms") val kms: List<Any>?,
-    @JsonProperty("gcp_kms") val gcp_kms: List<GcpKmsEntry>?,
-    @JsonProperty("azure_kv") val azureKv: List<Any>?,
-    @JsonProperty("hc_vault") val hcVault: List<Any>?,
-    @JsonProperty("age") val age: List<AgeEntry>?,
-    @JsonProperty("lastmodified") val lastmodified: String?,
-    @JsonProperty("mac") val mac: String?,
-    @JsonProperty("pgp") val pgp: List<Any>?,
-    @JsonProperty("unencrypted_suffix") val unencrypted_suffix: String?,
-    @JsonProperty("version") val version: String?,
+    @JsonProperty("shamir_threshold") val shamir_threshold: Int = 1,
+    @JsonProperty("key_groups") val key_groups: List<KeyGroup>? = emptyList(),
+    @JsonProperty("kms") val kms: List<Any>? = emptyList(),
+    @JsonProperty("gcp_kms") val gcp_kms: List<GcpKmsEntry>? = emptyList(),
+    @JsonProperty("azure_kv") val azureKv: List<Any>? = emptyList(),
+    @JsonProperty("hc_vault") val hcVault: List<Any>? = emptyList(),
+    @JsonProperty("age") val age: List<AgeEntry>? = emptyList(),
+    @JsonProperty("lastmodified") val lastmodified: String? = null,
+    @JsonProperty("mac") val mac: String? = null,
+    @JsonProperty("pgp") val pgp: List<Any>? = null,
+    @JsonProperty("unencrypted_suffix") val unencrypted_suffix: String? = null,
+    @JsonProperty("version") val version: String? = null,
 )
 
 data class KeyGroup(
