@@ -20,12 +20,17 @@ gradle-app.setting
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 
+.history/
+
+.DS_Store
+
 
 # Idea
 .idea/**
 
 # Env
-.env
+.env*
+!.env.example
 
 bin/**
 
