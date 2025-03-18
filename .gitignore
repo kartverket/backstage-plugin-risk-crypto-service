@@ -29,7 +29,8 @@ gradle-app.setting
 .idea/**
 
 # Env
-.env
+.env*
+!.env.example
 
 bin/**
 

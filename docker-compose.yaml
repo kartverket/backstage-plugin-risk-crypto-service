@@ -1,6 +1,11 @@
 services:
-  crypto-service:
-    build: .
+  app:
+    build:
+      context: .
+      args:
+        # Loads args from the .env file.
+        BUILD_IMAGE: ${BUILD_IMAGE}
+        IMAGE: ${IMAGE}
     ports:
       - "8084:8084"
     env_file:
