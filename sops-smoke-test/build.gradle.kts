@@ -47,3 +47,43 @@ tasks.withType<Test> {
 
 tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar").enabled = false
 tasks.getByName<Jar>("jar").enabled = true
+
+tasks.register("buildDockerIfNeeded") {
+
+    doLast {
+
+        if (System.getenv("CI") != null) {
+            println("Running in CI/CD, skipping Docker build.")
+            return@doLast
+        }
+
+        val dockerProcess = ProcessBuilder("docker", "info").start()
+        if (dockerProcess.waitFor() != 0) {
+            throw GradleException("Docker is not running. Please start Docker and try again.")
+        }
+
+        val imageExists =
+            ProcessBuilder("docker", "images", "-q", "crypto-service-test:latest")
+                .start()
+                .inputStream
+                .bufferedReader()
+                .readText()
+                .trim()
+                .isNotEmpty()
+
+        if (!imageExists) {
+            println("Docker image 'crypto-service-test:latest' not found. Building...")
+            val buildProcess =
+                ProcessBuilder("docker", "build", "-t", "crypto-service-test", ".")
+                    .inheritIO()
+                    .start()
+            buildProcess.waitFor()
+        } else {
+            println("Docker image 'crypto-service-test:latest' already exists. Skipping build.")
+        }
+    }
+}
+
+tasks.named("test") {
+    dependsOn("buildDockerIfNeeded")
+}

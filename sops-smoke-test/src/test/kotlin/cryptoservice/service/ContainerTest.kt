@@ -38,6 +38,7 @@ class ContainerTest {
             .is5xxServerError
             .expectBody(SimpleErrorResponse::class.java)
             .value({ errorResponse ->
+                println("ACTUAL RESPONSE: ${errorResponse.body.detail}")
                 assertTrue(errorResponse.body.detail?.matches(expectedDetailRegex) ?: false, {
                     """
                     Unexpected error detail:
