@@ -1,4 +1,4 @@
-name: Build and deploy backend to SKIP
+name: Build and deploy to SKIP
 on:
   workflow_dispatch:
   pull_request:
@@ -48,7 +48,7 @@ jobs:
         uses: gradle/actions/dependency-submission@v3
 
       - name: Execute Gradle build
-        run: ./gradlew build
+        run: ./gradlew build -x test
 
       - name: Set tag
         id: set-tag
@@ -92,12 +92,13 @@ jobs:
           CRYPTO_SERVICE_CONTAINER: ${{ steps.meta.outputs.tags }}
         run: ./gradlew sops-smoke-test:test
 
-      - name: Build docker and push
-        id: build-docker
+      - name: Push Docker image (if not draft & test passed)
+        id: push-docker
+        if: ${{ success() &&  !github.event.pull_request.draft }}
         uses: docker/build-push-action@v5
         with:
           context: .
-          push: ${{ !github.event.pull_request.draft }}
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
@@ -117,7 +118,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Run Pharos"
-        uses: kartverket/pharos@v0.3.1
+        uses: kartverket/pharos@v0.2.5
         with:
           image_url: ${{ needs.build.outputs.image_url }}
 

@@ -6,6 +6,8 @@ sops [here](https://github.com/getsops/sops).
 The current version of sops is bekk/sops, but this can be changed to the official sops
 when [this](https://github.com/getsops/sops/pull/1578) has been included.
 
+<br>
+
 ## sops configuration file
 
 In order to encrypt files, the service is dependent on having a .sops.yaml-configuration file.
@@ -32,12 +34,16 @@ especially important to remember in terms of kms-resources.
 > encryption succeeds, however, if an error occurs it might not be. The information in these files are already stored in
 > github, and does not contain any secret information.
 
+<br>
+
 ### Age
 
 [Age](https://github.com/FiloSottile/age) is a simple, modern and secyre encryption tool, format and Go library.
 In this service we use asymmetric Age key-pairs to encrypt and decrypt files. The asymmetry of the Age keys makes it
 easy to add the public key to the .sops.yaml configuration files.
 The private keys are kept secret, and used for decryption of files.
+
+<br>
 
 ### Google Cloud Key Management Service
 
@@ -50,9 +56,38 @@ restricted to the user.
 This service only support the use of the GCP KMS and not the other kms-es that sops support, unless authentication is
 provided.
 
+<br>
+<br>
+
 # Setup
 
-## Download sops
+To run the crypto service locally you can either run it through IntelliJ or as a docker-image with docker-compose.
+We recommend running it with docker-compose as this do not require downloading a custom configured sops on your local machine.
+
+<br>
+
+## Local setup with docker-compose
+
+To run locally with docker-compose, you first need to create the git-ignored file `.env`.
+```
+cp .env.example .env
+```
+
+> If you are on M4 Mac, uncomment IMAGE and BUILD_IMAGE.
+
+If you need access to environment-variables, ask a colleague.
+
+You can then build and run the application with 
+```shell
+docker-compose up
+```
+which starts the crypto service on port 8084.
+
+<br>
+
+## Local setup with IntelliJ
+
+### Download sops
 
 To run the crypto service locally you need to have sops installed.
 
@@ -80,6 +115,37 @@ chmod +x sops
 export PATH=$PATH:<path to file>
 ```
 
+<br>
+
+### Oppdatere Bekk sin sops-versjon før versjon 3.10 (NB! IKKE KVALITETSSIKRET!)
+Det finnes en [PR fra Maren Ringsby](https://github.com/getsops/sops/pull/1578) for å legge til støtte for bruk av GCP-tokens mot GCP KMS. 
+Etter planen blir den med i 3.10-versjon av sops. 
+
+Inntil det må Bekk sin sops versjon holdes i sync med utviklingen i sops. Her er skrittene:
+
+#### Oppdater Maren sin branch (lokalt)
+1. `git clone https://github.com/marensofier/sops.git maren-sops` // Last ned maren sitt repo
+2. `cd maren-sops` 
+3. `git checkout add_access_token` //Bytt til branchen med endringen
+3. `git remote add upstream https://github.com/getsops/sops.git` // Lag remote til sops
+4. `git fetch upstream` // Hent ned siste versjon av sops
+5. `git pull upstream main` // Merge inn endringer fra originalen. Her er det sikkert konflikter i avhengigheter som må fikses
+
+#### Oppdater Bekk sin versjon til å bli maken til den oppdaterte versjonen til Maren    
+1. `cd ..` // Gå et hakk opp 
+2. `git clone https://github.com/bekk/sops.git bekk-sops` // Last ned Bekk sin versjon av sops
+3. `cd bekk-sops`
+4. `git remote add maren-sops ../maren-sops/.git` // Lag en remote til vår lokale maren-sops
+5. `git fetch maren-sops` // Hent alle brancher
+5. `git branch --track add_access_token maren-sops/add_access_token` // Lag en lokal branch av maren-sops sin main
+6. `git checkout add_access_token` // Svitsje til branchen som har riktigst sops nå
+7. `git merge -s ours main` // merge med bekk-sops sin main, men behold alt fra maren-sops-main
+8. `git checkout main` // tilbake til bekk-sops sin main
+9. `git merge add_access_token` // få main til å se ut som maren-sops-main
+10. `git push` // direkte push på main, som KAN stoppes av github-regler (i så fall gå via en PR)
+
+<br>
+
 ## Environment variables
 
 **SOPS_AGE_KEY** is an environment variable necessary to run the application with sops. The sops age key is the private
@@ -100,6 +166,8 @@ brew install age
 age-keygen -o $HOME/Library/Application Support/sops/age/keys.txt
 ```
 
+<br>
+
 ## Run it from Intellij
 
 We recommend using IntelliJ for local development. To run the application, simply open the repository locally and
@@ -107,6 +175,8 @@ select[`Local Server`](https://github.com/kartverket/backstage-plugin-risk-crypt
 as your run configuration, then run it.
 
 Change the SOPS_AGE_KEY to your key, but remember to keep your private key safe.
+
+<br>
 
 ## Run it from the Terminal
 
