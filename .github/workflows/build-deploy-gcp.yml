@@ -48,6 +48,7 @@ jobs:
         uses: docker/setup-buildx-action@f95db51fddba0c2d1ec667646a06c2ce06100226 # v3.0.0
 
       - name: Build docker image
+        id: build-docker
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -72,14 +73,4 @@ jobs:
         run: ./gradlew sops-smoke-test:test
 
       - name: Push the Docker image to Google Artifact Registry if test passes
-        if: success()
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: Dockerfile
-          push: true
-          tags: |
-              ${{ env.AR_URL }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-              ${{ env.AR_URL }}/${{ env.IMAGE_NAME }}:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+        run: docker push --all-tags ${{ env.AR_URL }}/${{ env.IMAGE_NAME }}

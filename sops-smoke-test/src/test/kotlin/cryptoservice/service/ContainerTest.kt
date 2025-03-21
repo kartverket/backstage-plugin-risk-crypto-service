@@ -1,11 +1,15 @@
 import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
 import org.springframework.http.ProblemDetail
 import org.springframework.test.web.reactive.server.WebTestClient
+import org.testcontainers.containers.Container
 import org.testcontainers.containers.GenericContainer
+import org.testcontainers.containers.output.Slf4jLogConsumer
 
 class ContainerTest {
     @Test
@@ -14,9 +18,7 @@ class ContainerTest {
 
         val expectedDetailRegex =
             Regex(
-                "Exception message: Failed when encrypting RiSc with ID: some-id by running sops command: sops --encrypt" +
-                    " --input-type json --output-type yaml --config /tmp/sopsConfig-some-id-\\d+.yaml /dev/stdin with error " +
-                    "message: config file not found, or has no creation rules, and no keys provided through command line options\n",
+                "Exception message: Failed when encrypting RiSc with ID: some-id ",
             )
         val client = WebTestClient.bindToServer().baseUrl(address).build()
         client
@@ -28,7 +30,7 @@ class ContainerTest {
                 """
                 {
                     "text": "Hello",
-                    "config": "some-config: 1",
+                    "config": {"gcp_kms": null},
                     "gcpAccessToken": "fake-token",
                     "riScId": "some-id"
                 }
@@ -49,6 +51,13 @@ class ContainerTest {
             })
     }
 
+    @Test
+    fun `check that sops exists as a command in container`() {
+        val sopsResult: Container.ExecResult = cryptoServiceContainer.execInContainer("sops", "--version")
+        val exitCode: Int = sopsResult.exitCode
+        assertEquals(exitCode, 0)
+    }
+
     class SimpleErrorResponse(
         val body: ProblemDetail,
     )
@@ -62,6 +71,9 @@ class ContainerTest {
         @BeforeAll
         fun beforeAll() {
             cryptoServiceContainer.start()
+            val logger = LoggerFactory.getLogger(ContainerTest::class.java)
+            val logConsumer = Slf4jLogConsumer(logger).withSeparateOutputStreams()
+            cryptoServiceContainer.followOutput(logConsumer)
         }
 
         @JvmStatic

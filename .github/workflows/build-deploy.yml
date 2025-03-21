@@ -82,25 +82,14 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          push: false
-          load: true
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Execute Gradle sops-smoke-test
         env:
-          CRYPTO_SERVICE_CONTAINER: ${{ steps.meta.outputs.tags }}
+          CRYPTO_SERVICE_CONTAINER: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build-docker.outputs.digest }}
         run: ./gradlew sops-smoke-test:test
-
-      - name: Push Docker image (if not draft & test passed)
-        id: push-docker
-        if: ${{ success() &&  !github.event.pull_request.draft }}
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
 
       - name: Set output with build values
         id: setOutput
