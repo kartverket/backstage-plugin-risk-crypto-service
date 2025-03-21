@@ -10,8 +10,8 @@ FROM ${IMAGE}
 
 RUN mkdir -p /app /app/logs /app/tmp
 
-ARG SOPS_AMD64="https://github.com/bekk/sops/releases/download/v3/sops-v3.linux.amd64"
-ARG SOPS_ARM64="https://github.com/bekk/sops/releases/download/v3/sops-v3.linux.arm64"
+ARG SOPS_AMD64="https://github.com/bekk/sops/releases/download/v3.9.4/sops-v3.linux.amd64"
+ARG SOPS_ARM64="https://github.com/bekk/sops/releases/download/v3.9.4/sops-v3.linux.arm64"
 
 ARG TARGETARCH
 RUN if [ "$TARGETARCH" = "amd64" ]; then \

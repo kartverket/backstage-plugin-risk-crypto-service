@@ -43,6 +43,7 @@ kotlin {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    dependsOn("buildDockerIfNeeded")
 }
 
 tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar").enabled = false
@@ -73,17 +74,28 @@ tasks.register("buildDockerIfNeeded") {
 
         if (!imageExists) {
             println("Docker image 'crypto-service-test:latest' not found. Building...")
-            val buildProcess =
-                ProcessBuilder("docker", "build", "-t", "crypto-service-test", ".")
-                    .inheritIO()
-                    .start()
-            buildProcess.waitFor()
+            val arch =
+                if (System.getProperty("os.arch") == "aarch64") {
+                    "arm64"
+                } else {
+                    "amd64"
+                }
+            ProcessBuilder("docker", "build", "--build-arg", "TARGETARCH=$arch", "-t", "crypto-service-test", ".")
+                .start()
+                .run {
+                    val result = this.errorReader().readText()
+                    when (waitFor()) {
+                        0 -> {
+                            println("image built successfully")
+                        }
+                        else -> {
+                            logger.error("Docker build failed with ${exitValue()}: $result")
+                            throw IllegalStateException("Docker build failed with ${exitValue()}: $result")
+                        }
+                    }
+                }
         } else {
             println("Docker image 'crypto-service-test:latest' already exists. Skipping build.")
         }
     }
-}
-
-tasks.named("test") {
-    dependsOn("buildDockerIfNeeded")
 }
