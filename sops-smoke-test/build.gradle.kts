@@ -84,14 +84,11 @@ tasks.register("buildDockerIfNeeded") {
                 .start()
                 .run {
                     val result = this.errorReader().readText()
-                    when (waitFor()) {
-                        0 -> {
-                            println("image built successfully")
-                        }
-                        else -> {
-                            logger.error("Docker build failed with ${exitValue()}: $result")
-                            throw IllegalStateException("Docker build failed with ${exitValue()}: $result")
-                        }
+                    if (waitFor() == 0) {
+                        println("image built successfully")
+                    } else {
+                        logger.error("Docker build failed with ${exitValue()}: $result")
+                        throw IllegalStateException("Docker build failed with ${exitValue()}: $result")
                     }
                 }
         } else {
