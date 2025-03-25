@@ -59,6 +59,7 @@ class ContainerTest {
         val cryptoServiceContainer =
             GenericContainer(System.getenv("CRYPTO_SERVICE_CONTAINER") ?: "crypto-service-test:latest")
                 .withExposedPorts(8080)
+                .withEnv("SOPS_AGE_KEY", System.getenv("SOPS_AGE_KEY") ?: "dummy-value")
 
         @JvmStatic
         @BeforeAll
