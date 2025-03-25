@@ -88,6 +88,7 @@ jobs:
 
       - name: Execute Gradle sops-smoke-test
         env:
+          SOPS_AGE_KEY: dummy-value
           CRYPTO_SERVICE_CONTAINER: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build-docker.outputs.digest }}
         run: ./gradlew sops-smoke-test:test
 
