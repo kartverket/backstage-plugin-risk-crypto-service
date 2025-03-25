@@ -1,6 +1,5 @@
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
@@ -16,10 +15,6 @@ class ContainerTest {
     fun `call encrypt`() {
         val address = "http://${cryptoServiceContainer.host}:${cryptoServiceContainer.getMappedPort(8080)}"
 
-        val expectedDetailRegex =
-            Regex(
-                "Exception message: Failed when encrypting RiSc with ID: some-id ",
-            )
         val client = WebTestClient.bindToServer().baseUrl(address).build()
         client
             .post()
@@ -41,13 +36,10 @@ class ContainerTest {
             .expectBody(SimpleErrorResponse::class.java)
             .value({ errorResponse ->
                 println("ACTUAL RESPONSE: ${errorResponse.body.detail}")
-                assertTrue(errorResponse.body.detail?.matches(expectedDetailRegex) ?: false, {
-                    """
-                    Unexpected error detail:
-                    Expected ${expectedDetailRegex.pattern}
-                    actual: ${errorResponse.body.detail}
-                    """.trimIndent()
-                })
+                assertEquals(
+                    "Exception message: Failed when encrypting RiSc with ID: some-id ",
+                    errorResponse.body.detail,
+                )
             })
     }
 
