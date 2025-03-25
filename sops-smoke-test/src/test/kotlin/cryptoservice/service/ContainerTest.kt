@@ -46,8 +46,7 @@ class ContainerTest {
     @Test
     fun `check that sops exists as a command in container`() {
         val sopsResult: Container.ExecResult = cryptoServiceContainer.execInContainer("sops", "--version")
-        val exitCode: Int = sopsResult.exitCode
-        assertEquals(exitCode, 0)
+        assertEquals(0, sopsResult.exitCode)
     }
 
     class SimpleErrorResponse(
