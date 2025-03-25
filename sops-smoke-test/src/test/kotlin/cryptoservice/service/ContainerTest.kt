@@ -15,8 +15,10 @@ class ContainerTest {
     fun `call encrypt`() {
         val address = "http://${cryptoServiceContainer.host}:${cryptoServiceContainer.getMappedPort(8080)}"
 
-        val client = WebTestClient.bindToServer().baseUrl(address).build()
-        client
+        WebTestClient
+            .bindToServer()
+            .baseUrl(address)
+            .build()
             .post()
             .uri("/encrypt")
             .accept(MediaType.APPLICATION_JSON)
