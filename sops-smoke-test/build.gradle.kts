@@ -74,29 +74,32 @@ tasks.register("buildDockerIfNeeded") {
                 .trim()
                 .isNotEmpty()
 
-        if (!imageExists) {
-            println("Docker image 'crypto-service-test:latest' not found. Building...")
-            val arch =
-                if (System.getProperty("os.arch") == "aarch64") {
-                    "arm64"
-                } else {
-                    "amd64"
-                }
-            ProcessBuilder("docker", "build", "--build-arg", "TARGETARCH=$arch", "-t", "crypto-service-test", ".")
-                .start()
-                .run {
-                    val exit = waitFor()
-                    val result = errorReader().readText()
-
-                    if (exit == 0) {
-                        println("image built successfully")
-                    } else {
-                        logger.error("Docker build failed with $exit: $result")
-                        throw IllegalStateException("Docker build failed with $exit: $result")
-                    }
-                }
-        } else {
+        if (imageExists) {
             println("Docker image 'crypto-service-test:latest' already exists. Skipping build.")
+            return@doLast
         }
+
+        println("Docker image 'crypto-service-test:latest' not found. Building...")
+
+        val arch =
+            if (System.getProperty("os.arch") == "aarch64") {
+                "arm64"
+            } else {
+                "amd64"
+            }
+
+        ProcessBuilder("docker", "build", "--build-arg", "TARGETARCH=$arch", "-t", "crypto-service-test", ".")
+            .start()
+            .run {
+                val exit = waitFor()
+                val result = errorReader().readText()
+
+                if (exit == 0) {
+                    println("image built successfully")
+                } else {
+                    logger.error("Docker build failed with $exit: $result")
+                    throw IllegalStateException("Docker build failed with $exit: $result")
+                }
+            }
     }
 }
