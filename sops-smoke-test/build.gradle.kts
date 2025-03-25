@@ -83,12 +83,14 @@ tasks.register("buildDockerIfNeeded") {
             ProcessBuilder("docker", "build", "--build-arg", "TARGETARCH=$arch", "-t", "crypto-service-test", ".")
                 .start()
                 .run {
-                    val result = this.errorReader().readText()
-                    if (waitFor() == 0) {
+                    val exit = waitFor()
+                    val result = errorReader().readText()
+
+                    if (exit == 0) {
                         println("image built successfully")
                     } else {
-                        logger.error("Docker build failed with ${exitValue()}: $result")
-                        throw IllegalStateException("Docker build failed with ${exitValue()}: $result")
+                        logger.error("Docker build failed with $exit: $result")
+                        throw IllegalStateException("Docker build failed with $exit: $result")
                     }
                 }
         } else {
