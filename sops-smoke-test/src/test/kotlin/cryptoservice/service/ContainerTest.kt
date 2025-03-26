@@ -37,7 +37,6 @@ class ContainerTest {
             .is5xxServerError
             .expectBody(SimpleErrorResponse::class.java)
             .value({ errorResponse ->
-                println("ACTUAL RESPONSE: ${errorResponse.body.detail}")
                 assertEquals(
                     "Exception message: Failed when encrypting RiSc with ID: some-id ",
                     errorResponse.body.detail,
