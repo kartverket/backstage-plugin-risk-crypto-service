@@ -21,12 +21,45 @@ java {
     }
 }
 
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.addAll("-Xjsr305=strict")
+    }
+}
+
 repositories {
     mavenCentral()
 }
 
+sourceSets {
+    create("smokeTest") {
+        kotlin.srcDirs("src/smokeTest/kotlin")
+    }
+}
+
+// Shared dependency declaration for all test code
+val sharedTestImplementation: Configuration by configurations.register("sharedTestImplementation")
+val sharedTestRuntimeOnly: Configuration by configurations.register("sharedTestRuntimeOnly")
+
+// Make the standard tests use the shared test dependencies
+val testImplementation: Configuration by configurations.getting {
+    extendsFrom(configurations.getByName("sharedTestImplementation"))
+}
+val testRuntimeOnly: Configuration by configurations.getting {
+    extendsFrom(configurations.getByName("sharedTestRuntimeOnly"))
+}
+
+// Make the smoke tests use the shared test dependencies
+val smokeTestImplementation: Configuration by configurations.getting {
+    extendsFrom(configurations.getByName("sharedTestImplementation"))
+}
+val smokeTestRuntimeOnly: Configuration by configurations.getting {
+    extendsFrom(configurations.getByName("sharedTestRuntimeOnly"))
+}
+
 val fasterXmlJacksonVersion = "2.17.0"
 val kotlinxSerializationVersion = "1.7.3"
+val testcontainersVersion = "1.20.6"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -37,17 +70,85 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$fasterXmlJacksonVersion")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$fasterXmlJacksonVersion")
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    sharedTestImplementation("org.springframework.boot:spring-boot-starter-test")
+    sharedTestImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+    sharedTestRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    smokeTestImplementation("org.springframework.boot:spring-boot-starter-webflux")
+    smokeTestImplementation("org.testcontainers:testcontainers:$testcontainersVersion")
 }
 
-kotlin {
-    compilerOptions {
-        freeCompilerArgs.addAll("-Xjsr305=strict")
-    }
+tasks.check {
+    dependsOn("smokeTest")
 }
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.register<Test>("smokeTest") {
+    description = "Runs integration tests."
+    group = "verification"
+
+    testClassesDirs = sourceSets["smokeTest"].output.classesDirs
+    classpath = sourceSets["smokeTest"].runtimeClasspath
+
+    dependsOn("buildDockerIfNeeded")
+
+    // The smoke test depends on the container building properly. Should be run after the unit tests if all tests are ran.
+    shouldRunAfter("test")
+}
+
+
+tasks.register("buildDockerIfNeeded") {
+
+    doLast {
+
+        if (System.getenv("CI") != null) {
+            println("Running in CI/CD, skipping Docker build.")
+            return@doLast
+        }
+
+        val dockerProcess = ProcessBuilder("docker", "info").start()
+        if (dockerProcess.waitFor() != 0) {
+            throw GradleException("Docker is not running. Please start Docker and try again.")
+        }
+
+        val imageExists =
+            ProcessBuilder("docker", "images", "-q", "crypto-service-test:latest")
+                .start()
+                .inputStream
+                .bufferedReader()
+                .readText()
+                .trim()
+                .isNotEmpty()
+
+        if (imageExists) {
+            println("Docker image 'crypto-service-test:latest' already exists. Skipping build.")
+            return@doLast
+        }
+
+        println("Docker image 'crypto-service-test:latest' not found. Building...")
+
+        val arch =
+            if (System.getProperty("os.arch") == "aarch64") {
+                "arm64"
+            } else {
+                "amd64"
+            }
+
+        ProcessBuilder("docker", "build", "--build-arg", "TARGETARCH=$arch", "-t", "crypto-service-test", ".")
+            .start()
+            .run {
+                val exit = waitFor()
+                val result = errorReader().readText()
+
+                if (exit == 0) {
+                    println("image built successfully")
+                } else {
+                    logger.error("Docker build failed with $exit: $result")
+                    throw IllegalStateException("Docker build failed with $exit: $result")
+                }
+            }
+    }
 }
