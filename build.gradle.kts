@@ -25,7 +25,7 @@ repositories {
     mavenCentral()
 }
 
-val fasterXmlJacksonVersion = "2.17.0"
+val fasterXmlJacksonVersion = "2.18.3"
 val kotlinxSerializationVersion = "1.7.3"
 
 dependencies {
