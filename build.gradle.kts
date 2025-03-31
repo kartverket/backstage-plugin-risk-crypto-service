@@ -99,7 +99,6 @@ tasks.register<Test>("smokeTest") {
     shouldRunAfter("test")
 }
 
-
 tasks.register("buildDockerIfNeeded") {
 
     doLast {
