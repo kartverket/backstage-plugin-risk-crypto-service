@@ -4,7 +4,7 @@ ARG IMAGE=eclipse-temurin:23.0.2_7-jre-alpine-3.21
 FROM ${BUILD_IMAGE} AS build
 
 COPY . .
-RUN ./gradlew build -x test
+RUN ./gradlew build -x test -x smokeTest
 
 FROM ${IMAGE}
 
