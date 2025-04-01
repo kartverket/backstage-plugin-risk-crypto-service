@@ -104,50 +104,43 @@ tasks.register("buildDockerIfNeeded") {
     doLast {
 
         if (System.getenv("CI") != null) {
-            println("Running in CI/CD, skipping Docker build.")
+            logger.info("Running in CI/CD, skipping Docker build.")
             return@doLast
         }
 
         val dockerProcess = ProcessBuilder("docker", "info").start()
         if (dockerProcess.waitFor() != 0) {
-            throw GradleException("Docker is not running. Please start Docker and try again.")
+            throw IllegalStateException("Docker is not running. Please start Docker and try again.")
         }
 
         val imageExists =
             ProcessBuilder("docker", "images", "-q", "crypto-service-test:latest")
                 .start()
-                .inputStream
-                .bufferedReader()
+                .inputReader()
                 .readText()
-                .trim()
-                .isNotEmpty()
+                .isNotBlank()
 
         if (imageExists) {
-            println("Docker image 'crypto-service-test:latest' already exists. Skipping build.")
+            logger.info("Docker image 'crypto-service-test:latest' already exists. Skipping build.")
             return@doLast
         }
 
-        println("Docker image 'crypto-service-test:latest' not found. Building...")
+        logger.info("Docker image 'crypto-service-test:latest' not found. Building...")
 
-        val arch =
-            if (System.getProperty("os.arch") == "aarch64") {
-                "arm64"
-            } else {
-                "amd64"
-            }
+        val arch = if (System.getProperty("os.arch") == "aarch64") "arm64" else "amd64"
 
         ProcessBuilder("docker", "build", "--build-arg", "TARGETARCH=$arch", "-t", "crypto-service-test", ".")
             .start()
             .run {
-                val exit = waitFor()
-                val result = errorReader().readText()
+                val exitCode = waitFor()
 
-                if (exit == 0) {
-                    println("image built successfully")
-                } else {
-                    logger.error("Docker build failed with $exit: $result")
-                    throw IllegalStateException("Docker build failed with $exit: $result")
+                if (exitCode != 0) {
+                    val result = errorReader().readText()
+                    logger.error("Docker build failed with exit code $exitCode: $result")
+                    throw IllegalStateException("Docker build failed with exit code $exitCode: $result")
                 }
+
+                logger.info("Docker image built successfully.")
             }
     }
 }
