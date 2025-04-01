@@ -86,10 +86,10 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Execute Gradle sops-smoke-test
+      - name: Execute Gradle Sops Smoke Test
         env:
           CRYPTO_SERVICE_CONTAINER: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build-docker.outputs.digest }}
-        run: ./gradlew sops-smoke-test:test
+        run: ./gradlew smokeTest
 
       - name: Set output with build values
         id: setOutput
