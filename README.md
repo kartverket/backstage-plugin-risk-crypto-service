@@ -1,14 +1,20 @@
 # Crypto-service
 
-The crypto service is used to encrypt and decrypt sops-files. You can read more about
-sops [here](https://github.com/getsops/sops).
-
-The current version of sops is bekk/sops, but this can be changed to the official sops
-when [this](https://github.com/getsops/sops/pull/1578) has been included.
+The crypto service is used to encrypt and decrypt SOPS-files. You can read more about
+SOPS [here](https://github.com/getsops/sops).
 
 <br>
 
-## sops configuration file
+## Update SOPS version
+
+To update the SOPS version
+
+1. Find the latest version available from https://github.com/getsops/sops.
+2. Change the `SOPS_VERSION` variable in `Dockerfile` to the latest version.
+
+<br>
+
+## SOPS configuration file
 
 In order to encrypt files, the service is dependent on having a .sops.yaml-configuration file.
 Example:
@@ -30,15 +36,15 @@ When encrypting files, the crypto service has to be able to access all resources
 especially important to remember in terms of kms-resources.
 
 > Small note on config files: The crypto service stores the configuration file as a temporary file. This is deleted when
-> the sops
+> the SOPS
 > encryption succeeds, however, if an error occurs it might not be. The information in these files are already stored in
-> github, and does not contain any secret information.
+> GitHub, and does not contain any secret information.
 
 <br>
 
 ### Age
 
-[Age](https://github.com/FiloSottile/age) is a simple, modern and secyre encryption tool, format and Go library.
+[Age](https://github.com/FiloSottile/age) is a simple, modern and secure encryption tool, format and Go library.
 In this service we use asymmetric Age key-pairs to encrypt and decrypt files. The asymmetry of the Age keys makes it
 easy to add the public key to the .sops.yaml configuration files.
 The private keys are kept secret, and used for decryption of files.
@@ -50,19 +56,19 @@ The private keys are kept secret, and used for decryption of files.
 The GCP KMS is the only supported KMS in this service. There are other available key management services available
 through sops, but they require credentials or personal access tokens.
 
-When using sops, a personal access token is used to access the resources, because of this the access to the resource is
+When using SOPS, a personal access token is used to access the resources, because of this the access to the resource is
 restricted to the user.
 
-This service only support the use of the GCP KMS and not the other kms-es that sops support, unless authentication is
+This service only support the use of the GCP KMS and not the other KMS-es that SOPS support, unless authentication is
 provided.
 
-<br>
 <br>
 
 # Setup
 
 To run the crypto service locally you can either run it through IntelliJ or as a docker-image with docker-compose.
-We recommend running it with docker-compose as this do not require downloading a custom configured sops on your local machine.
+We recommend running it with docker-compose as this do not require downloading a custom configured SOPS installation on
+your local machine.
 
 <br>
 
@@ -87,73 +93,31 @@ which starts the crypto service on port 8084.
 
 ## Local setup with IntelliJ
 
-### Download sops
-
-To run the crypto service locally you need to have sops installed.
-
-It is very easy to do with gh
-
-```sh
-brew install gh
-gh auth login
-```
-
-The current version used in crypto service has added functionality with the use of google access tokens to access the
-crypto key resources from the gcp kms.
+To run the crypto service locally you need to have SOPS installed:
 
 ```shell
-# download the latest version
-gh release download --repo https://github.com/bekk/sops <nyeste versjon> --pattern '*.darwin.arm64'
+# Download SOPS using curl (replace <version> with the preferred version, e.g., v3.10.1. If not on MacOS, replace
+# `darwin` with `linux` or similar, depending on your system.
+curl -o sops -L "https://github.com/getsops/sops/releases/download/<version>/sops-<version>.darwin.arm64"
 
-# rename the file to sops
-mv sops-v1.2.darwin.arm64 sops
-
-# make it executable
+# Make the file executable
 chmod +x sops
 
-# add sops to your path
+# Add sops to your path. To permanently add sops to your path, add this to your shell config file (`.bashrc`,
+# `.zshrc` or the equivalent in your shell of choice).
 export PATH=$PATH:<path to file>
 ```
 
 <br>
 
-### Oppdatere Bekk sin sops-versjon før versjon 3.10 (NB! IKKE KVALITETSSIKRET!)
-Det finnes en [PR fra Maren Ringsby](https://github.com/getsops/sops/pull/1578) for å legge til støtte for bruk av GCP-tokens mot GCP KMS. 
-Etter planen blir den med i 3.10-versjon av sops. 
-
-Inntil det må Bekk sin sops versjon holdes i sync med utviklingen i sops. Her er skrittene:
-
-#### Oppdater Maren sin branch (lokalt)
-1. `git clone https://github.com/marensofier/sops.git maren-sops` // Last ned maren sitt repo
-2. `cd maren-sops` 
-3. `git checkout add_access_token` //Bytt til branchen med endringen
-3. `git remote add upstream https://github.com/getsops/sops.git` // Lag remote til sops
-4. `git fetch upstream` // Hent ned siste versjon av sops
-5. `git pull upstream main` // Merge inn endringer fra originalen. Her er det sikkert konflikter i avhengigheter som må fikses
-
-#### Oppdater Bekk sin versjon til å bli maken til den oppdaterte versjonen til Maren    
-1. `cd ..` // Gå et hakk opp 
-2. `git clone https://github.com/bekk/sops.git bekk-sops` // Last ned Bekk sin versjon av sops
-3. `cd bekk-sops`
-4. `git remote add maren-sops ../maren-sops/.git` // Lag en remote til vår lokale maren-sops
-5. `git fetch maren-sops` // Hent alle brancher
-5. `git branch --track add_access_token maren-sops/add_access_token` // Lag en lokal branch av maren-sops sin main
-6. `git checkout add_access_token` // Svitsje til branchen som har riktigst sops nå
-7. `git merge -s ours main` // merge med bekk-sops sin main, men behold alt fra maren-sops-main
-8. `git checkout main` // tilbake til bekk-sops sin main
-9. `git merge add_access_token` // få main til å se ut som maren-sops-main
-10. `git push` // direkte push på main, som KAN stoppes av github-regler (i så fall gå via en PR)
-
-<br>
-
 ## Environment variables
 
-**SOPS_AGE_KEY** is an environment variable necessary to run the application with sops. The sops age key is the private
+**SOPS_AGE_KEY** is an environment variable necessary to run the application with SOPS. The SOPS age key is the private
 key of an assymetric Age key-pair.
 The cryptoservice assumes that all files are encrypted with the public key of the key-pair(and is present in the
 .sops.yaml-config files), and use the private sops age key to decrypt the files.
 
-Sops is configured to read the private key from either a keys.txt-file from your user configuration directory, or from
+SOPS is configured to read the private key from either a keys.txt-file from your user configuration directory, or from
 the environment variable. The keys.txt-file will have precedence.
 
 This can be created by following these steps for mac-users
@@ -162,7 +126,7 @@ This can be created by following these steps for mac-users
 # install age
 brew install age
 
-# create a key-pair, and add the private part to the sops config directory
+# create a key-pair, and add the private part to the SOPS config directory
 age-keygen -o $HOME/Library/Application Support/sops/age/keys.txt
 ```
 
