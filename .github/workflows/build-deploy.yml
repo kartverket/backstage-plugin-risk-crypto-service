@@ -48,7 +48,7 @@ jobs:
         uses: gradle/actions/dependency-submission@v3
 
       - name: Execute Gradle build
-        run: ./gradlew build -x test
+        run: ./gradlew build -x test -x smokeTest
 
       - name: Set tag
         id: set-tag
@@ -82,9 +82,14 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          push: ${{ !github.event.pull_request.draft }}
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Execute Gradle Sops Smoke Test
+        env:
+          CRYPTO_SERVICE_CONTAINER: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build-docker.outputs.digest }}
+        run: ./gradlew smokeTest
 
       - name: Set output with build values
         id: setOutput
