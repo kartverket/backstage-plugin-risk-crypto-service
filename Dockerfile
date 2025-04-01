@@ -3,10 +3,16 @@ ARG IMAGE=eclipse-temurin:23.0.2_7-jre-alpine-3.21
 
 FROM ${BUILD_IMAGE} AS build
 
+# Get security updates
+RUN apk update && apk upgrade
+
 COPY . .
 RUN ./gradlew build -x test -x smokeTest
 
 FROM ${IMAGE}
+
+# Get security updates
+RUN apk update && apk upgrade
 
 RUN mkdir -p /app /app/logs /app/tmp
 
@@ -27,6 +33,12 @@ RUN if [ "$TARGETARCH" = "amd64" ]; then \
   && chmod +x /usr/local/bin/sops
 
 COPY --from=build /build/libs/*.jar /app/backend.jar
+
+# Add non-root user and change permissions.
+RUN adduser -D user && chown -R user:user /app /app/logs /app/tmp
+
+# Switch to non-root user.
+USER user
 
 EXPOSE 8080 8081
 ENTRYPOINT ["java", "-jar", "/app/backend.jar"]
