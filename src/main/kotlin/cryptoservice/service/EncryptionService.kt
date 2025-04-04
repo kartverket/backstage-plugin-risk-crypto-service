@@ -43,18 +43,34 @@ class EncryptionService {
                         "age" to listOf(securityTeamPublicKey),
                         "gcp_kms" to
                             listOf(
-                                mapOf("resource_id" to config.gcp_kms?.first()?.resource_id),
+                                mapOf(
+                                    "resource_id" to
+                                        config.gcp_kms
+                                            ?.first()
+                                            ?.resource_id,
+                                ),
                             ),
                     ),
                     mapOf(
-                        "age" to listOf(backendPublicKey, securityPlatformPublicKey),
-                    ),
-                    mapOf(
                         "age" to
-                            config.age
-                                ?.map { it.recipient }
-                                ?.filter { it !in setOf(securityTeamPublicKey, backendPublicKey, securityPlatformPublicKey) },
+                            listOf(backendPublicKey, securityPlatformPublicKey),
                     ),
+                    config.age?.let { ageKeys ->
+                        val developerKeys =
+                            ageKeys.map { it.recipient }.filter {
+                                it !in
+                                    setOf(
+                                        securityTeamPublicKey,
+                                        backendPublicKey,
+                                        securityPlatformPublicKey,
+                                    )
+                            }
+                        if (developerKeys.isNotEmpty()) {
+                            mapOf("age" to developerKeys)
+                        } else {
+                            null
+                        }
+                    },
                 )
 
             // Create SOPS config
@@ -63,7 +79,8 @@ class EncryptionService {
                     "creation_rules" to
                         listOf(
                             mapOf(
-                                "shamir_threshold" to config.shamir_threshold,
+                                "shamir_threshold" to
+                                    config.shamir_threshold,
                                 "key_groups" to keyGroups,
                             ),
                         ),
@@ -96,9 +113,12 @@ class EncryptionService {
                         }
                         else -> {
                             tempConfigFile.delete()
-                            logger.error("IOException from encrypting yaml with error code ${exitValue()}: $result")
+                            logger.error(
+                                "IOException from encrypting yaml with error code ${exitValue()}: $result",
+                            )
                             throw SopsEncryptionException(
-                                message = "Failed when encrypting RiSc with ID: $riScId ",
+                                message =
+                                    "Failed when encrypting RiSc with ID: $riScId ",
                                 riScId = riScId,
                             )
                         }
