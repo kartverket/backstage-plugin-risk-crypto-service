@@ -7,10 +7,16 @@ on:
     paths-ignore:
       - docker-compose.yaml
       - README**
+      - .github/CODEOWNERS
+      - '.security/**'
+      - '.gitignore'
   push:
     paths-ignore:
       - docker-compose.yaml
       - README**
+      - .github/CODEOWNERS
+      - '.security/**'
+      - '.gitignore'
     branches:
       - main
 
