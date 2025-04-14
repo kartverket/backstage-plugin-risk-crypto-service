@@ -5,74 +5,65 @@ import cryptoservice.model.RiScWithConfig
 import cryptoservice.model.SopsConfig
 import cryptoservice.service.DecryptionService
 import cryptoservice.service.EncryptionService
+import io.mockk.every
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.`when`
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.boot.test.mock.mockito.MockBean
+
 import org.springframework.http.MediaType
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import com.ninjasquad.springmockk.MockkBean
 
-
-//@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT) //starter spring-applikasjonen
-//inkludert controllere. må ha den for å ha et endepunkt å kalle
 @WebMvcTest(CryptoController::class)
-@AutoConfigureMockMvc //setter opp en mockMvc automatisk
+@AutoConfigureMockMvc
 @TestPropertySource(
-    properties = [
-        "sops.ageKey=test-age-key",
-        "sops.decryption.backendPublicKey=dummy-backend",
-        "sops.decryption.securityTeamPublicKey=dummy-team",
-        "sops.decryption.securityPlatformPublicKey=dummy-platform"
-    ]
+    properties = ["sops.ageKey=test-age-key"] //ha denne med? eller hente fra application.properties?
 )
 
 class CryptoControllerTest() {
 
-    @Autowired //initialiserer webtestclient
-    lateinit var mockMvc: MockMvc // ønsker en webtestclient koblet til applikasjonen når jeg starter testen
+    @Autowired
+    lateinit var mockMvc: MockMvc
 
-    //TODO: bruke denne eller ReplaceWithMock? hvilken spring boot versjon brukes og skal det oppdateres snart?
-
-    @MockBean
+    @MockkBean
     lateinit var decryptionService: DecryptionService
 
-    @MockBean
+    @MockkBean
     lateinit var encryptionService: EncryptionService
 
-    @Value("\${sops.ageKey}") //dummy variabel definert over
+    @Value("\${sops.ageKey}")
     lateinit var sopsAgePrivateKey: String
 
-    // teste decrypt endepunktet
-    // én success
     @Test
-    //fun `should return 200 ok and decrypted object`() { // TODO: kanskje endre navn på testen
-    fun `should return RiscWithConfig object on successful decrypt`() { //funker dette?
+    fun `should return RiscWithConfig object on successful decrypt`() {
+        //arrange
         val cipherText = "ENC[encrypted]"
         val token = "token123"
 
         val expected = RiScWithConfig(
             riSc = "decrypted-data",
             sopsConfig = SopsConfig(
-                shamir_threshold = 1
-                //gcp_kms = emptyList(),
-                //version = "3.7.3"
+                shamir_threshold = 1,
+                version = "3.7.3"
             )
         )
 
-        `when`(
+        println("sopsAgePrivateKey = '$sopsAgePrivateKey'")
+        every {
             decryptionService.decryptWithSopsConfig(
-                ciphertext = cipherText,
-                gcpAccessToken = GCPAccessToken(token),
-                sopsAgeKey = sopsAgePrivateKey
+                ciphertext = match {
+                    println("ACTUAL ciphertext: '$it'")
+                    it.trim('"') == cipherText
+                },
+                gcpAccessToken = eq(GCPAccessToken(token)),
+                sopsAgeKey = eq(sopsAgePrivateKey)
             )
-        ).thenReturn(expected)
+        } returns expected
 
         mockMvc.perform(
             post("/decrypt")
@@ -85,15 +76,10 @@ class CryptoControllerTest() {
             }
 
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.risc").value("decrypted-data"))
-            //.andExpect(jsonPath("$.sopsConfig.version").value("3.7.3"))
+            .andExpect(jsonPath("$.riSc").value("decrypted-data"))
+            .andExpect(jsonPath("$.sopsConfig.version").value("3.7.3"))
     }
 }
-
-                // Arrange
-
-                // Act
-                // Assert
 
         // én fail
         //@Test
