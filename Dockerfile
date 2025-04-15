@@ -16,7 +16,7 @@ RUN apk update && apk upgrade
 
 RUN mkdir -p /app /app/logs /app/tmp
 
-ARG SOPS_VERSION="v3.10.1"
+ARG SOPS_VERSION="v3.10.2"
 
 ARG SOPS_AMD64="https://github.com/getsops/sops/releases/download/$SOPS_VERSION/sops-$SOPS_VERSION.linux.amd64"
 ARG SOPS_ARM64="https://github.com/getsops/sops/releases/download/$SOPS_VERSION/sops-$SOPS_VERSION.linux.arm64"
