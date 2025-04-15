@@ -79,6 +79,46 @@ class CryptoControllerTest() {
             .andExpect(jsonPath("$.riSc").value("decrypted-data"))
             .andExpect(jsonPath("$.sopsConfig.version").value("3.7.3"))
     }
+
+    @Test
+    fun `should return 500 when decryption fails`() {
+        val cipherText = "ENC[invalid]"
+        val token = "token123"
+
+        every {
+            decryptionService.decryptWithSopsConfig(any(), any(), any())
+        } throws RuntimeException("mocked failure")
+
+        mockMvc.perform(
+            post("/decrypt")
+                .header("gcpAccessToken", token)
+                .content("\"$cipherText\"")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isInternalServerError)
+    }
+
+    @Test
+    fun `should return encrypted string on successful encrypt`() {
+        val plaintext = "some-secret"
+        val encrypted = "ENC[encrypted]"
+
+        every { encryptionService.encrypt(eq(plaintext)) } returns encrypted //TODO: se på encrypt endepunkt
+
+        mockMvc.perform(
+            post("/encrypt")
+                .content("\"$plaintext\"")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk)
+            .andExpect(content().string("\"$encrypted\""))
+    }
+
+    //Test 2: Feilende decrypt – f.eks. ugyldig token
+
+    //Test 3: Feilende decrypt – generisk exception
+
+    //Test 4: encrypt: should return encrypted string on successful encrypt
 }
 
         // én fail
