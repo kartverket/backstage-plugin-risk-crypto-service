@@ -41,7 +41,6 @@ class CryptoControllerTest() {
 
     @Test
     fun `should return RiscWithConfig object on successful decrypt`() {
-        //arrange
         val cipherText = "ENC[encrypted]"
         val token = "token123"
 
@@ -49,7 +48,7 @@ class CryptoControllerTest() {
             riSc = "decrypted-data",
             sopsConfig = SopsConfig(
                 shamir_threshold = 1,
-                version = "3.7.3"
+                version = "3.7.3" //trenger strengt tatt ikke ha med denne
             )
         )
 
@@ -102,33 +101,76 @@ class CryptoControllerTest() {
     fun `should return encrypted string on successful encrypt`() {
         val plaintext = "some-secret"
         val encrypted = "ENC[encrypted]"
+        val gcpToken = "token123"
+        val riScId = "risc-id-123"
 
-        every { encryptionService.encrypt(eq(plaintext)) } returns encrypted //TODO: se på encrypt endepunkt
+        val config = SopsConfig(
+            shamir_threshold = 1
+        )
+
+        val requestJson = """
+        {
+            "text": "$plaintext",
+            "config": {
+                "shamir_threshold": 1
+            },
+            "gcpAccessToken": "$gcpToken",
+            "riScId": "$riScId"
+        }
+    """.trimIndent()
+
+        every {
+            encryptionService.encrypt(
+                eq(plaintext),
+                eq(config),
+                eq(GCPAccessToken(gcpToken)),
+                eq(riScId)
+            )
+        } returns encrypted
 
         mockMvc.perform(
             post("/encrypt")
-                .content("\"$plaintext\"")
                 .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson)
         )
             .andExpect(status().isOk)
-            .andExpect(content().string("\"$encrypted\""))
+            .andExpect(content().string(encrypted))
     }
 
-    //Test 2: Feilende decrypt – f.eks. ugyldig token
+    @Test
+    fun `should return 500 when encryption fails`() {
+        val plaintext = "some-secret"
+        val gcpToken = "token123"
+        val riScId = "risc-id-123"
 
-    //Test 3: Feilende decrypt – generisk exception
+        val config = SopsConfig(
+            shamir_threshold = 1
+        )
 
-    //Test 4: encrypt: should return encrypted string on successful encrypt
+        val requestJson = """
+        {
+            "text": "$plaintext",
+            "config": {
+                "shamir_threshold": 1
+            },
+            "gcpAccessToken": "$gcpToken",
+            "riScId": "$riScId"
+        }
+    """.trimIndent()
+
+        every {
+            encryptionService.encrypt(
+                any(), any(), any(), any()
+            )
+        } throws RuntimeException("mocked encryption failure")
+
+        mockMvc.perform(
+            post("/encrypt")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson)
+        )
+            .andExpect(status().isInternalServerError)
+    }
 }
 
-        // én fail
-        //@Test
-        //fun `should return 200 ok and decrypted object`() {
-
-       // }
-
-    // teste encrypt endepunktet
-        // én success
-        // én fail
-
-
+//TODO: legge til tester for 400 bad request
