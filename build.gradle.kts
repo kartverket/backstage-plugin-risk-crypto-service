@@ -76,11 +76,9 @@ dependencies {
         exclude(group = "org.mockito")
     }
 
-
     sharedTestImplementation("org.springframework.boot:spring-boot-starter-test")
     sharedTestImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     sharedTestRuntimeOnly("org.junit.platform:junit-platform-launcher")
-
 
     smokeTestImplementation("org.springframework.boot:spring-boot-starter-webflux")
     smokeTestImplementation("org.testcontainers:testcontainers:$testcontainersVersion")
