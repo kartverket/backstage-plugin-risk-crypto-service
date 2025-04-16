@@ -23,7 +23,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 @WebMvcTest(CryptoController::class)
 @AutoConfigureMockMvc
 @TestPropertySource(
-    properties = ["sops.ageKey=test-age-key"], // ha denne med? eller hente fra application.properties?
+    properties = ["sops.ageKey=test-age-key"],
 )
 class CryptoControllerTest {
     @Autowired
@@ -49,7 +49,6 @@ class CryptoControllerTest {
                 sopsConfig =
                     SopsConfig(
                         shamir_threshold = 1,
-                        version = "3.7.3", // trenger strengt tatt ikke ha med denne
                     ),
             )
 
@@ -74,7 +73,6 @@ class CryptoControllerTest {
                 println("Response body: ${result.response.contentAsString}")
             }.andExpect(status().isOk)
             .andExpect(jsonPath("$.riSc").value("decrypted-data"))
-            .andExpect(jsonPath("$.sopsConfig.version").value("3.7.3"))
     }
 
     @Test
