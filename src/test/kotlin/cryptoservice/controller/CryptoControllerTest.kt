@@ -73,6 +73,7 @@ class CryptoControllerTest {
                 println("Response body: ${result.response.contentAsString}")
             }.andExpect(status().isOk)
             .andExpect(jsonPath("$.riSc").value("decrypted-data"))
+            .andExpect(jsonPath("$.sopsConfig.shamir_threshold").value(1))
     }
 
     @Test
