@@ -76,7 +76,7 @@ class CryptoControllerTest {
     }
 
     @Test
-    fun `should return encrypted string on successful encrypt`() {
+    fun `should encrypt plaintext with valid token`() {
         val plaintext = "some-secret"
         val encrypted = "ENC[encrypted]"
         val gcpToken = "token123"
