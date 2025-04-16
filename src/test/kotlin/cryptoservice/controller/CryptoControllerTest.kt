@@ -39,7 +39,7 @@ class CryptoControllerTest {
     lateinit var sopsAgePrivateKey: String
 
     @Test
-    fun `should return RiscWithConfig object on successful decrypt`() {
+    fun `should decrypt with valid token and ciphertext`() {
         val cipherText = "ENC[encrypted]"
         val token = "token123"
 
