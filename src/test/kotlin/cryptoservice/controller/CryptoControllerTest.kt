@@ -128,7 +128,7 @@ class CryptoControllerTest {
     }
 
     @Test
-    fun `should return 400 when encryption request is invalid`() {
+    fun `should return 400 when encryption request body is invalid`() {
         val invalidJson = "{}"
 
         mockMvc
