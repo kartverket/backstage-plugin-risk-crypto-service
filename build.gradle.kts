@@ -70,6 +70,9 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$fasterXmlJacksonVersion")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$fasterXmlJacksonVersion")
 
+    testImplementation("io.mockk:mockk:1.13.7")
+    testImplementation("com.ninja-squad:springmockk:4.0.2")
+
     sharedTestImplementation("org.springframework.boot:spring-boot-starter-test")
     sharedTestImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     sharedTestRuntimeOnly("org.junit.platform:junit-platform-launcher")
