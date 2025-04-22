@@ -54,7 +54,7 @@ jobs:
         uses: gradle/actions/dependency-submission@v3
 
       - name: Execute Gradle build
-        run: ./gradlew build -x test -x smokeTest
+        run: ./gradlew build -x smokeTest
 
       - name: Set tag
         id: set-tag
