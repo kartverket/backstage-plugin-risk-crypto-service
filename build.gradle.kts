@@ -72,9 +72,6 @@ dependencies {
 
     testImplementation("io.mockk:mockk:1.13.7")
     testImplementation("com.ninja-squad:springmockk:4.0.2")
-    testImplementation("org.springframework.boot:spring-boot-starter-test") {
-        exclude(group = "org.mockito")
-    }
 
     sharedTestImplementation("org.springframework.boot:spring-boot-starter-test")
     sharedTestImplementation("org.jetbrains.kotlin:kotlin-test-junit5")

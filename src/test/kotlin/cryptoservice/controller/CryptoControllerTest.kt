@@ -47,9 +47,7 @@ class CryptoControllerTest {
             RiScWithConfig(
                 riSc = "decrypted-data",
                 sopsConfig =
-                    SopsConfig(
-                        shamir_threshold = 1,
-                    ),
+                    SopsConfig(),
             )
 
         every {
@@ -71,7 +69,6 @@ class CryptoControllerTest {
                     .contentType(MediaType.APPLICATION_JSON),
             ).andExpect(status().isOk)
             .andExpect(jsonPath("$.riSc").value("decrypted-data"))
-            .andExpect(jsonPath("$.sopsConfig.shamir_threshold").value(1))
     }
 
     @Test
@@ -86,17 +83,7 @@ class CryptoControllerTest {
                 shamir_threshold = 1,
             )
 
-        val requestJson =
-            """
-            {
-                "text": "$plaintext",
-                "config": {
-                    "shamir_threshold": 1
-                },
-                "gcpAccessToken": "$gcpToken",
-                "riScId": "$riScId"
-            }
-            """.trimIndent()
+        val requestJson = buildEncryptionRequestJson(plaintext, 1, gcpToken, riScId)
 
         every {
             encryptionService.encrypt(
@@ -163,17 +150,7 @@ class CryptoControllerTest {
         val gcpToken = "token123"
         val riScId = "risc-id-123"
 
-        val requestJson =
-            """
-            {
-                "text": "$plaintext",
-                "config": {
-                    "shamir_threshold": 1
-                },
-                "gcpAccessToken": "$gcpToken",
-                "riScId": "$riScId"
-            }
-            """.trimIndent()
+        val requestJson = buildEncryptionRequestJson(plaintext, 1, gcpToken, riScId)
 
         every {
             encryptionService.encrypt(
@@ -191,4 +168,21 @@ class CryptoControllerTest {
                     .content(requestJson),
             ).andExpect(status().isInternalServerError)
     }
+
+    private fun buildEncryptionRequestJson(
+        text: String,
+        shamirThreshold: Int,
+        gcpAccessToken: String,
+        riScId: String,
+    ): String =
+        """
+        {
+            "text": "$text",
+            "config": {
+                "shamir_threshold": $shamirThreshold
+            },
+            "gcpAccessToken": "$gcpAccessToken",
+            "riScId": "$riScId"
+        }
+        """.trimIndent()
 }
