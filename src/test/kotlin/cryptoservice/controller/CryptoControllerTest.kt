@@ -69,9 +69,7 @@ class CryptoControllerTest {
                     .header("gcpAccessToken", token)
                     .content("\"$cipherText\"")
                     .contentType(MediaType.APPLICATION_JSON),
-            ).andDo { result ->
-                println("Response body: ${result.response.contentAsString}")
-            }.andExpect(status().isOk)
+            ).andExpect(status().isOk)
             .andExpect(jsonPath("$.riSc").value("decrypted-data"))
             .andExpect(jsonPath("$.sopsConfig.shamir_threshold").value(1))
     }
