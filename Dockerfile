@@ -1,5 +1,5 @@
-ARG BUILD_IMAGE=eclipse-temurin:23.0.2_7-jdk-alpine-3.21
-ARG IMAGE=eclipse-temurin:23.0.2_7-jre-alpine-3.21
+ARG BUILD_IMAGE=eclipse-temurin:24.0.1_9-jdk-alpine-3.21
+ARG IMAGE=eclipse-temurin:24.0.1_9-jre-alpine-3.21
 
 FROM ${BUILD_IMAGE} AS build
 
