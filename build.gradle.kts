@@ -60,12 +60,15 @@ val smokeTestRuntimeOnly: Configuration by configurations.getting {
 val fasterXmlJacksonVersion = "2.18.3"
 val kotlinxSerializationVersion = "1.7.3"
 val testcontainersVersion = "1.20.6"
+val micrometerVersion = "1.14.6"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("io.micrometer:micrometer-registry-prometheus")
+    implementation("io.micrometer:micrometer-registry-prometheus:$micrometerVersion") {
+        because("Provides endpoints for health and event monitoring that are used in SKIP.")
+    }
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$fasterXmlJacksonVersion")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$fasterXmlJacksonVersion")
