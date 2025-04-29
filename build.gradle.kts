@@ -62,6 +62,7 @@ val testcontainersVersion = "1.21.0"
 val micrometerVersion = "1.14.6"
 val mockkVersion = "1.14.0"
 val springMockkVersion = "4.0.2"
+val junitVersion = "5.12.2"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -81,6 +82,10 @@ dependencies {
     testImplementation("com.ninja-squad:springmockk:$springMockkVersion")
 
     sharedTestImplementation("org.springframework.boot:spring-boot-starter-test")
+
+    platform("org.junit:junit-bom:$junitVersion") {
+        because("The BOM (bill of materials) provides correct versions for all JUnit libraries used.")
+    }
     sharedTestImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     sharedTestRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
