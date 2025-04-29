@@ -89,7 +89,7 @@ dependencies {
     sharedTestImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     sharedTestRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
-    smokeTestImplementation("org.springframework.boot:spring-boot-starter-webflux")
+    smokeTestImplementation("org.springframework.boot:spring-boot-starter-webflux:$springBootVersion")
     smokeTestImplementation("org.testcontainers:testcontainers:$testcontainersVersion")
 }
 
