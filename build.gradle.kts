@@ -60,6 +60,8 @@ val smokeTestRuntimeOnly: Configuration by configurations.getting {
 val fasterXmlJacksonVersion = "2.19.0"
 val testcontainersVersion = "1.21.0"
 val micrometerVersion = "1.14.6"
+val mockkVersion = "1.14.0"
+val springMockkVersion = "4.0.2"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -75,8 +77,8 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
 
-    testImplementation("io.mockk:mockk:1.14.0")
-    testImplementation("com.ninja-squad:springmockk:4.0.2")
+    testImplementation("io.mockk:mockk:$mockkVersion")
+    testImplementation("com.ninja-squad:springmockk:$springMockkVersion")
 
     sharedTestImplementation("org.springframework.boot:spring-boot-starter-test")
     sharedTestImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
