@@ -70,8 +70,11 @@ dependencies {
         because("Provides endpoints for health and event monitoring that are used in SKIP.")
     }
 
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$fasterXmlJacksonVersion")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$fasterXmlJacksonVersion")
+    implementation("com.fasterxml.jackson:jackson-bom:$fasterXmlJacksonVersion") {
+        because("The BOM provides correct versions for all FasterXML Jackson dependencies.")
+    }
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
 
     testImplementation("io.mockk:mockk:1.14.0")
     testImplementation("com.ninja-squad:springmockk:4.0.2")
