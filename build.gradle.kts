@@ -68,7 +68,6 @@ val junitVersion = "5.12.2"
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-starter-actuator:$springBootVersion")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("io.micrometer:micrometer-registry-prometheus:$micrometerVersion") {
         because("Provides endpoints for health and event monitoring that are used in SKIP.")
     }
