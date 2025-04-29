@@ -57,6 +57,7 @@ val smokeTestRuntimeOnly: Configuration by configurations.getting {
     extendsFrom(configurations.getByName("sharedTestRuntimeOnly"))
 }
 
+val springBootVersion = "3.4.5"
 val fasterXmlJacksonVersion = "2.19.0"
 val testcontainersVersion = "1.21.0"
 val micrometerVersion = "1.14.6"
@@ -65,8 +66,8 @@ val springMockkVersion = "4.0.2"
 val junitVersion = "5.12.2"
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
+    implementation("org.springframework.boot:spring-boot-starter-actuator:$springBootVersion")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("io.micrometer:micrometer-registry-prometheus:$micrometerVersion") {
         because("Provides endpoints for health and event monitoring that are used in SKIP.")
@@ -81,7 +82,7 @@ dependencies {
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("com.ninja-squad:springmockk:$springMockkVersion")
 
-    sharedTestImplementation("org.springframework.boot:spring-boot-starter-test")
+    sharedTestImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
 
     platform("org.junit:junit-bom:$junitVersion") {
         because("The BOM (bill of materials) provides correct versions for all JUnit libraries used.")
