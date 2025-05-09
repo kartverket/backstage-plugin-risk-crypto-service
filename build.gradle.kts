@@ -69,7 +69,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-starter-actuator:$springBootVersion")
     implementation("io.micrometer:micrometer-registry-prometheus:$micrometerVersion") {
-        because("Provides endpoints for health and event monitoring that are used in SKIP.")
+        because("Provides endpoints for health and event monitoring that are used in SKIP and Docker.")
     }
 
     implementation("com.fasterxml.jackson:jackson-bom:$fasterXmlJacksonVersion") {
