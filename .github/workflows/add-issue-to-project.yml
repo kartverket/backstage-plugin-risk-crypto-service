@@ -3,6 +3,9 @@ name: Add all issues to Sikkerhetsmetrikker project
 on:
   issues:
 
+permissions:
+  issues: read
+
 jobs:
   add-to-project:
     name: Add issue to project
