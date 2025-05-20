@@ -6,10 +6,10 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "12.2.0"
 }
 
-// Oppgradeer til siste versjon av ktlint fordi org.jlleitschuh.gradle.ktlint version 12.1.2 bruker for gammel versjon
-// Slett når ktlint-plugin'en oppdateres til nyere versjon
+// Specifies the usage of the currently newest version of Ktlint. `org.jlleitschuh.gradle.ktlint` version 12.2.0 is
+// not guaranteed to use the newest version available.
 ktlint {
-    version.set("1.5.0")
+    version.set("1.6.0")
 }
 
 group = "no"
