@@ -63,7 +63,7 @@ val testcontainersVersion = "1.21.1"
 val micrometerVersion = "1.15.0"
 val mockkVersion = "1.14.2"
 val springMockkVersion = "4.0.2"
-val junitVersion = "5.12.2"
+val junitVersion = "5.13.0"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
