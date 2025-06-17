@@ -37,6 +37,14 @@ sourceSets {
     }
 }
 
+configurations.all {
+    resolutionStrategy.eachDependency {
+        if (requested.group == "org.springframework" && requested.name == "spring-web" && requested.version == "6.2.7") {
+            useVersion("6.2.8") // Prøver å fikse sårbarheter i spring-boot-starter-web:3.5.0
+        }
+    }
+}
+
 // Shared dependency declaration for all test code
 val sharedTestImplementation: Configuration by configurations.register("sharedTestImplementation")
 val sharedTestRuntimeOnly: Configuration by configurations.register("sharedTestRuntimeOnly")
