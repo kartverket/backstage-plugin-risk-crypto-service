@@ -1,5 +1,5 @@
 plugins {
-    id("org.springframework.boot") version "3.5.0"
+    id("org.springframework.boot") version "3.4.6"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("jvm") version "2.1.21"
     kotlin("plugin.spring") version "2.1.21"
@@ -42,6 +42,9 @@ configurations.all {
         if (requested.group == "org.springframework" && requested.name == "spring-web" && requested.version == "6.2.7") {
             useVersion("6.2.8") // Prøver å fikse sårbarheter i spring-boot-starter-web:3.5.0
         }
+        if (requested.group == "org.apache.tomcat.embed" && requested.version == "10.1.41") {
+            useVersion("10.1.42")
+        }
     }
 }
 
@@ -65,7 +68,7 @@ val smokeTestRuntimeOnly: Configuration by configurations.getting {
     extendsFrom(configurations.getByName("sharedTestRuntimeOnly"))
 }
 
-val springBootVersion = "3.5.0"
+val springBootVersion = "3.4.6"
 val fasterXmlJacksonVersion = "2.19.0"
 val testcontainersVersion = "1.21.1"
 val micrometerVersion = "1.15.1"
