@@ -3,8 +3,20 @@ ARG IMAGE=eclipse-temurin:23.0.2_7-jre-alpine-3.21
 ARG SOPS_BUILD_IMAGE=golang:1.24.4
 
 # Set SOPS_TAG=main to get latest
-ARG SOPS_TAG=v3.10.2
+ARG SOPS_VERSION_ARG=3.10.2
+# Set SOPS_TAG=main to get latest codebase
+ARG SOPS_TAG=v${SOPS_VERSION_ARG}
 
+### Build app ###
+FROM ${BUILD_IMAGE} AS build
+
+# Get security updates
+RUN apk upgrade --no-cache
+
+COPY . .
+RUN ./gradlew build -x test -x smokeTest
+
+### Build Sops ###
 FROM ${SOPS_BUILD_IMAGE} as sops_build
 
 # Repeat ARG to use it
@@ -28,27 +40,36 @@ RUN git config --global advice.detachedHead false && \
 # Change working directory to sops source
 WORKDIR /build/sops
 
-# Build the project using make
-RUN make install
+# Build for selected arcitecure using make
+ARG TARGETARCH
+RUN if [ "$TARGETARCH" = "amd64" ]; then \
+      GOOS=linux GOARCH=amd64 make install; \
+      mv /go/bin/linux_amd64/sops /go/bin/sops; \
+    elif [ "$TARGETARCH" = "arm64" ]; then \
+      GOOS=linux GOARCH=arm64 make install; \
+    else \
+      echo "Unsupported architecture"; \
+      exit 1; \
+    fi
 
-FROM ${BUILD_IMAGE} AS build
-
-# Get security updates
-RUN apk upgrade --no-cache
-
-COPY . .
-RUN ./gradlew build -x test -x smokeTest
-
+### Assemble image ###
 FROM ${IMAGE}
 
-COPY --from=sops_build /go/bin/sops /usr/local/bin/sops
-RUN chmod +x /usr/local/bin/sops
+# Sops version is checked in actuator/health
+ARG SOPS_VERSION_ARG
+ENV SOPS_VERSION=${SOPS_VERSION_ARG}
 
-# Add non-root user and change permissions.
+COPY --from=sops_build /go/bin/sops /usr/bin/
+
+RUN chmod +x /usr/bin/sops
+
+# Add non-root user and set permissions.
 RUN mkdir /app /app/logs /app/tmp && \
     adduser -D user && chown -R user:user /app /app/logs /app/tmp
 
-COPY --from=build /build/libs/*.jar /app/backend.jar
+# Copy jars, remove *plain.jar, and rename runnable jar
+COPY --from=build /build/libs/*.jar /app/
+RUN rm /app/*-plain.jar && mv /app/*.jar /app/backend.jar
 
 # Switch to non-root user.
 USER user
