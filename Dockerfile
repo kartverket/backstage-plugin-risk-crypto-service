@@ -14,7 +14,7 @@ FROM ${BUILD_IMAGE} AS build
 RUN apk upgrade --no-cache
 
 COPY . .
-RUN ./gradlew build -x test -x smokeTest
+RUN ./gradlew build -x test -x smokeTest --no-daemon -Dorg.gradle.jvmargs="-Xmx1024m"
 
 ### Build Sops ###
 FROM ${SOPS_BUILD_IMAGE} as sops_build
