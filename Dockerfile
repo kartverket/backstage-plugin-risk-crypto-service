@@ -44,7 +44,7 @@ WORKDIR /build/sops
 ARG TARGETARCH
 RUN if [ "$TARGETARCH" = "amd64" ]; then \
       GOOS=linux GOARCH=amd64 make install; \
-      mv /go/bin/linux_amd64/sops /go/bin/sops; \
+      # mv /go/bin/linux_amd64/sops /go/bin/sops; \
     elif [ "$TARGETARCH" = "arm64" ]; then \
       GOOS=linux GOARCH=arm64 make install; \
     else \
