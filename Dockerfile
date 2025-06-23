@@ -55,14 +55,6 @@ RUN if [ "$TARGETARCH" = "amd64" ]; then \
 ### Assemble image ###
 FROM ${IMAGE}
 
-# Sops version is checked in actuator/health
-ARG SOPS_VERSION_ARG
-ENV SOPS_VERSION=${SOPS_VERSION_ARG}
-
-COPY --from=sops_build /go/bin/sops /usr/bin/
-
-RUN chmod +x /usr/bin/sops
-
 # Add non-root user and set permissions.
 RUN mkdir /app /app/logs /app/tmp && \
     adduser -D user && chown -R user:user /app /app/logs /app/tmp
@@ -71,6 +63,13 @@ RUN mkdir /app /app/logs /app/tmp && \
 COPY --from=build /build/libs/*.jar /app/
 RUN rm /app/*-plain.jar && mv /app/*.jar /app/backend.jar
 
+# Sops version is checked in actuator/health
+ARG SOPS_VERSION_ARG
+ENV SOPS_VERSION=${SOPS_VERSION_ARG}
+
+COPY --from=sops_build /go/bin/sops /usr/bin/
+
+RUN chmod +x /usr/bin/sops
 # Switch to non-root user.
 USER user
 
