@@ -17,8 +17,10 @@ COPY . .
 RUN ./gradlew build -x test -x smokeTest --no-daemon -Dorg.gradle.jvmargs="-Xmx1024m"
 
 ### Build Sops ###
-FROM ${SOPS_BUILD_IMAGE} as sops_build
+FROM --platform=$BUILDPLATFORM ${SOPS_BUILD_IMAGE} AS sops_build
 
+ARG TARGETOS
+ARG TARGETARCH
 # Repeat ARG to use it
 ARG SOPS_TAG
 # Convert ARG to ENV to use in cmd
@@ -41,16 +43,7 @@ RUN git config --global advice.detachedHead false && \
 WORKDIR /build/sops
 
 # Build for selected arcitecure using make
-ARG TARGETARCH
-RUN if [ "$TARGETARCH" = "amd64" ]; then \
-      GOOS=linux GOARCH=amd64 make install; \
-      # mv /go/bin/linux_amd64/sops /go/bin/sops; \
-    elif [ "$TARGETARCH" = "arm64" ]; then \
-      GOOS=linux GOARCH=arm64 make install; \
-    else \
-      echo "Unsupported architecture"; \
-      exit 1; \
-    fi
+RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -o /go/bin/sops .
 
 ### Assemble image ###
 FROM ${IMAGE}
