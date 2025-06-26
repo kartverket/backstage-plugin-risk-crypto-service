@@ -144,15 +144,17 @@ export SOPS_VERSION=<sops version running locally>
 ## Run it from image
 
 ```bash
-docker build --build-arg TARGETARCH=amd64 .
+docker buildx build .
 ```
 
 which eventually will end with
 ```
- ---> <image id>
-Successfully built <image id>
+=> => writing image  <image id>
 ```
 
 Then run:
 ```bash
-docker run -p 8081:8081 -p 8080:8080 -e SOPS_AGE_KEY=etc/bin -e MANAGEMENT.ENDPOINT.HEALTH.SHOW-DETAILS=always <image id>```
+docker run -p 8081:8081 -p 8080:8080 -e SOPS_AGE_KEY=etc/bin -e MANAGEMENT.ENDPOINT.HEALTH.SHOW-DETAILS=always <image id>
+```
+The argument `-e MANAGEMENT.ENDPOINT.HEALTH.SHOW-DETAILS=always` will display details 
+when GETing `http://localhost:8081/actuator/health`. Can be useful if health is reported as DOWN.
