@@ -1,8 +1,8 @@
 plugins {
     id("org.springframework.boot") version "3.5.3"
     id("io.spring.dependency-management") version "1.1.7"
-    kotlin("jvm") version "2.1.21"
-    kotlin("plugin.spring") version "2.1.21"
+    kotlin("jvm") version "2.2.0"
+    kotlin("plugin.spring") version "2.2.0"
     id("org.jlleitschuh.gradle.ktlint") version "12.3.0"
 }
 
@@ -68,13 +68,13 @@ val smokeTestRuntimeOnly: Configuration by configurations.getting {
     extendsFrom(configurations.getByName("sharedTestRuntimeOnly"))
 }
 
-val springBootVersion = "3.5.2"
+val springBootVersion = "3.5.3"
 val fasterXmlJacksonVersion = "2.19.1"
 val testcontainersVersion = "1.21.2"
 val micrometerVersion = "1.15.1"
-val mockkVersion = "1.14.2"
+val mockkVersion = "1.14.4"
 val springMockkVersion = "4.0.2"
-val junitVersion = "5.13.1"
+val junitVersion = "5.13.2"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
