@@ -30,8 +30,7 @@ ENV SOPS_BRANCH=${SOPS_TAG}
 WORKDIR /build
 
 # Install dependencies
-RUN apt-get update && apt-get install -y \
-    make \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
  && rm -rf /var/lib/apt/lists/*
 
