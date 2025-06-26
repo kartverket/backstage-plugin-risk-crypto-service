@@ -40,10 +40,10 @@ RUN git config --global advice.detachedHead false && \
     git clone --depth 1 --branch ${SOPS_BRANCH} https://github.com/getsops/sops.git
 
 # Change working directory to sops source
-WORKDIR /build/sops
+WORKDIR /build/sops/cmd/sops
 
 # Build for selected arcitecure using make
-RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -o /go/bin/sops .
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go install .
 
 ### Assemble image ###
 FROM ${IMAGE}
@@ -60,8 +60,7 @@ RUN rm /app/*-plain.jar && mv /app/*.jar /app/backend.jar
 ARG SOPS_VERSION_ARG
 ENV SOPS_VERSION=${SOPS_VERSION_ARG}
 
-COPY --from=sops_build /go/bin/sops /usr/bin/
-
+COPY --from=sops_build /go/bin/sops /usr/bin/sops
 RUN chmod +x /usr/bin/sops
 # Switch to non-root user.
 USER user

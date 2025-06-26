@@ -155,5 +155,4 @@ Successfully built <image id>
 
 Then run:
 ```bash
-docker docker run -p 8081:8081 -p 8080:8080 -e SOPS_AGE_KEY=etc/bin <image id>
-```
+docker run -p 8081:8081 -p 8080:8080 -e SOPS_AGE_KEY=etc/bin -e MANAGEMENT.ENDPOINT.HEALTH.SHOW-DETAILS=always <image id>```
