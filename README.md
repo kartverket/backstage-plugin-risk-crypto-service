@@ -10,9 +10,7 @@ SOPS [here](https://github.com/getsops/sops).
 To update the SOPS version
 
 1. Find the latest version available from https://github.com/getsops/sops.
-2. Change the `SOPS_VERSION` variable in `Dockerfile` to the latest version.
-
-<br>
+2. Change the `SOPS_VERSION_ARG` argument in `Dockerfile` to the latest version.
 
 ## SOPS configuration file
 
@@ -40,8 +38,6 @@ especially important to remember in terms of kms-resources.
 > encryption succeeds, however, if an error occurs it might not be. The information in these files are already stored in
 > GitHub, and does not contain any secret information.
 
-<br>
-
 ### Age
 
 [Age](https://github.com/FiloSottile/age) is a simple, modern and secure encryption tool, format and Go library.
@@ -49,7 +45,7 @@ In this service we use asymmetric Age key-pairs to encrypt and decrypt files. Th
 easy to add the public key to the .sops.yaml configuration files.
 The private keys are kept secret, and used for decryption of files.
 
-<br>
+
 
 ### Google Cloud Key Management Service
 
@@ -70,8 +66,6 @@ To run the crypto service locally you can either run it through IntelliJ or as a
 We recommend running it with docker-compose as this do not require downloading a custom configured SOPS installation on
 your local machine.
 
-<br>
-
 ## Local setup with docker-compose
 
 To run locally with docker-compose, you first need to create the git-ignored file `.env`.
@@ -89,8 +83,6 @@ docker-compose up
 ```
 which starts the crypto service on port 8084.
 
-<br>
-
 ## Local setup with IntelliJ
 
 To run the crypto service locally you need to have SOPS installed:
@@ -107,8 +99,6 @@ chmod +x sops
 # `.zshrc` or the equivalent in your shell of choice).
 export PATH=$PATH:<path to file>
 ```
-
-<br>
 
 ## Environment variables
 
@@ -130,7 +120,9 @@ brew install age
 age-keygen -o $HOME/Library/Application Support/sops/age/keys.txt
 ```
 
-<br>
+**SOPS_VERSION**, for example `3.10.2`, is used to check the health of the app using the `actuator/health` endpoint. 
+The app will be deemed unhealthy if the indicated version is not the same as returned by `sops -v`.
+The image created from Dockerfile will have this environment variable set.
 
 ## Run it from Intellij
 
@@ -140,12 +132,29 @@ as your run configuration, then run it.
 
 Change the SOPS_AGE_KEY to your key, but remember to keep your private key safe.
 
-<br>
 
 ## Run it from the Terminal
 
 ```shell
 export SOPS_AGE_KEY=<sops Age private key>
+export SOPS_VERSION=<sops version running locally>
 ./gradlew bootRun --args='--spring.profiles.active=local'
 ```
 
+## Run it from image
+
+```bash
+docker buildx build .
+```
+
+which eventually will end with
+```
+=> => writing image  <image id>
+```
+
+Then run:
+```bash
+docker run -p 8081:8081 -p 8080:8080 -e SOPS_AGE_KEY=etc/bin -e MANAGEMENT.ENDPOINT.HEALTH.SHOW-DETAILS=always <image id>
+```
+The argument `-e MANAGEMENT.ENDPOINT.HEALTH.SHOW-DETAILS=always` will display details 
+when GETing `http://localhost:8081/actuator/health`. Can be useful if health is reported as DOWN.
