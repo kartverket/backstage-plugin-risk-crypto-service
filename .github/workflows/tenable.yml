@@ -5,7 +5,6 @@ on:
       - docker-compose.yaml
       - README**
       - .github/CODEOWNERS
-      - '.security/**'
       - '.gitignore'
     branches:
       - tenable
