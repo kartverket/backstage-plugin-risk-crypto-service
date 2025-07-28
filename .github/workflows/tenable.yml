@@ -76,12 +76,14 @@ jobs:
         run: ./gradlew smokeTest
 
       - name: Run the Docker image
-        run: |
-          docker run -d --name scan-app \
-            --network scan-net \
-            -p 8080:8080 \
-            -p 8081:8081 \
-            ${{ env.AR_URL }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+      - run: |
+          docker run -p 8081:8081 -p 8080:8080 \ 
+          -e SOPS_AGE_KEY=dummy-value -e MANAGEMENT.ENDPOINT.HEALTH.SHOW-DETAILS=always \
+          -d --name scan-app \
+          --network scan-net \
+          -p 8080:8080 \
+          -p 8081:8081 \
+          ${{ env.AR_URL }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
       - name: Wait for app to become healthy
         run: |
