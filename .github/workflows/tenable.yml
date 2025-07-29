@@ -1,13 +1,12 @@
 name: Tenable
 on:
-  push:
+  pull_request:
+    types: [ready_for_review]
     paths-ignore:
       - docker-compose.yaml
       - README**
       - .github/CODEOWNERS
       - '.gitignore'
-    branches:
-      - tenable
 
 env:
   IMAGE_NAME: ${{ github.repository }}
