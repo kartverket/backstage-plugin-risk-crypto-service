@@ -77,6 +77,7 @@ jobs:
       - name: Run the Docker image
         run: |
           docker run -p 8081:8081 -p 8080:8080 \
+          -e SPRING_PROFILES_ACTIVE=test \
           -e SOPS_AGE_KEY=dummy-value -e MANAGEMENT.ENDPOINT.HEALTH.SHOW-DETAILS=always \
           -d --name scan-app \
           --network scan-net \
