@@ -24,7 +24,7 @@ defaults:
 
 jobs:
   push_to_ar:
-    name: 'Docker build and push to GCP'
+    name: 'Docker Build and Run Tenable Scan'
     permissions:
       contents: 'read'
       id-token: 'write'
