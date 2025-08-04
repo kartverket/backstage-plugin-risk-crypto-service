@@ -1,5 +1,5 @@
-ARG JVM_BUILD_IMAGE=eclipse-temurin:23.0.2_7-jdk-alpine-3.21
-ARG JRE_IMAGE=eclipse-temurin:24.0.1_9-jre-alpine-3.21
+ARG JVM_BUILD_IMAGE=eclipse-temurin:24.0.1_9-jdk-ubi9-minimal
+ARG JRE_IMAGE=eclipse-temurin:24.0.1_9-jre-ubi9-minimal
 ARG SOPS_BUILD_IMAGE=golang:1.24.4
 
 # Sops version that is targeted.
@@ -12,7 +12,7 @@ ARG SOPS_TAG=v${SOPS_VERSION_ARG}
 FROM ${JVM_BUILD_IMAGE} AS build
 
 # Get security updates
-RUN apk upgrade --no-cache
+RUN microdnf upgrade -y && microdnf clean all
 
 COPY . .
 RUN ./gradlew build -x test -x smokeTest --no-daemon -Dorg.gradle.jvmargs="-Xmx1024m"
@@ -50,9 +50,10 @@ RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go install .
 ### Assemble runtime image ###
 FROM ${JRE_IMAGE}
 
-# Add non-root user and set permissions.
-RUN mkdir /app /app/logs /app/tmp && \
-    adduser -D user && chown -R user:user /app /app/logs /app/tmp
+# Install wget and add non-root user and set permissions.
+RUN microdnf install -y wget && microdnf clean all && \
+    mkdir /app /app/logs /app/tmp && \
+    useradd -r -s /bin/false user && chown -R user:user /app /app/logs /app/tmp
 
 # Copy jars, remove *plain.jar, and rename runnable jar
 COPY --from=build /build/libs/*.jar /app/
