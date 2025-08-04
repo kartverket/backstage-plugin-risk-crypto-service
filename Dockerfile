@@ -50,9 +50,10 @@ RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go install .
 ### Assemble runtime image ###
 FROM ${JRE_IMAGE}
 
-# Add non-root user and set permissions.
-RUN mkdir /app /app/logs /app/tmp && \
-    adduser -D user && chown -R user:user /app /app/logs /app/tmp
+# Install wget and add non-root user and set permissions.
+RUN microdnf install -y wget && \
+    mkdir /app /app/logs /app/tmp && \
+    useradd -r -s /bin/false user && chown -R user:user /app /app/logs /app/tmp
 
 # Copy jars, remove *plain.jar, and rename runnable jar
 COPY --from=build /build/libs/*.jar /app/
