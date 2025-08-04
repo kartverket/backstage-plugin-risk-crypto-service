@@ -12,7 +12,7 @@ ARG SOPS_TAG=v${SOPS_VERSION_ARG}
 FROM ${JVM_BUILD_IMAGE} AS build
 
 # Get security updates
-RUN microdnf upgrade --no-cache
+RUN microdnf upgrade -y && microdnf clean all
 
 COPY . .
 RUN ./gradlew build -x test -x smokeTest --no-daemon -Dorg.gradle.jvmargs="-Xmx1024m"
@@ -51,7 +51,7 @@ RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go install .
 FROM ${JRE_IMAGE}
 
 # Install wget and add non-root user and set permissions.
-RUN microdnf install -y wget && \
+RUN microdnf install -y wget && microdnf clean all && \
     mkdir /app /app/logs /app/tmp && \
     useradd -r -s /bin/false user && chown -R user:user /app /app/logs /app/tmp
 
