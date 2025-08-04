@@ -11,8 +11,8 @@ ARG SOPS_TAG=v${SOPS_VERSION_ARG}
 ### Build app ###
 FROM ${JVM_BUILD_IMAGE} AS build
 
-# Get security updates
-RUN apk upgrade --no-cache
+# Get security updates including SQLite fix for CVE-2025-6965
+RUN apk upgrade --no-cache sqlite-libs
 
 COPY . .
 RUN ./gradlew build -x test -x smokeTest --no-daemon -Dorg.gradle.jvmargs="-Xmx1024m"
