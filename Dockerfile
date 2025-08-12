@@ -12,7 +12,7 @@ ARG SOPS_TAG=v${SOPS_VERSION_ARG}
 FROM ${JVM_BUILD_IMAGE} AS build
 
 # Get security updates
-RUN microdnf upgrade -y && microdnf clean all
+RUN microdnf upgrade -y && microdnf clean all && microdnf install findutils
 
 COPY . .
 RUN ./gradlew build -x test -x smokeTest --no-daemon -Dorg.gradle.jvmargs="-Xmx1024m"
