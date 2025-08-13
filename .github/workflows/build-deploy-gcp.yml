@@ -61,11 +61,14 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '23'
+          java-version: '24'
           architecture: 'x64'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.14.3" # Quotes required to prevent YAML converting to number
+
 
       - name: Execute Gradle Sops Smoke Test
         env:
