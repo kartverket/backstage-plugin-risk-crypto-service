@@ -44,11 +44,13 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '23'
+          java-version: '24'
           architecture: 'x64'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.14.3" # Quotes required to prevent YAML converting to number
 
       - name: Generate and submit dependency graph
         uses: gradle/actions/dependency-submission@v3
@@ -113,7 +115,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Run Pharos"
-        uses: kartverket/pharos@v0.3.2
+        uses: kartverket/pharos@v0.4.1
         with:
           image_url: ${{ needs.build.outputs.image_url }}
 

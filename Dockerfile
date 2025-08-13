@@ -1,6 +1,6 @@
-ARG JVM_BUILD_IMAGE=eclipse-temurin:23.0.2_7-jdk-alpine-3.21
-ARG JRE_IMAGE=eclipse-temurin:24.0.1_9-jre-alpine-3.21
-ARG SOPS_BUILD_IMAGE=golang:1.24.4
+ARG JVM_BUILD_IMAGE=eclipse-temurin:24.0.2_12-jdk-alpine-3.22
+ARG JRE_IMAGE=eclipse-temurin:24.0.2_12-jre-alpine-3.22
+ARG SOPS_BUILD_IMAGE=golang:1.24.6
 
 # Sops version that is targeted.
 ARG SOPS_VERSION_ARG=3.10.2
