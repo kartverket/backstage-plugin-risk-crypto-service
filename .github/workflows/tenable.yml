@@ -1,13 +1,12 @@
 name: Tenable
 on:
-  push:
+  pull_request:
+    types: [ready_for_review]
     paths-ignore:
       - docker-compose.yaml
       - README**
       - .github/CODEOWNERS
       - '.gitignore'
-    branches:
-      - tenable
 
 env:
   IMAGE_NAME: ${{ github.repository }}
@@ -24,7 +23,7 @@ defaults:
 
 jobs:
   push_to_ar:
-    name: 'Docker build and push to GCP'
+    name: 'Docker Build and Run Tenable Scan'
     permissions:
       contents: 'read'
       id-token: 'write'
@@ -77,6 +76,7 @@ jobs:
       - name: Run the Docker image
         run: |
           docker run -p 8081:8081 -p 8080:8080 \
+          -e SPRING_PROFILES_ACTIVE=test \
           -e SOPS_AGE_KEY=dummy-value -e MANAGEMENT.ENDPOINT.HEALTH.SHOW-DETAILS=always \
           -d --name scan-app \
           --network scan-net \
