@@ -1,9 +1,9 @@
 plugins {
-    id("org.springframework.boot") version "3.5.4"
+    id("org.springframework.boot") version "3.5.5"
     id("io.spring.dependency-management") version "1.1.7"
-    kotlin("jvm") version "2.2.0"
-    kotlin("plugin.spring") version "2.2.0"
-    id("org.jlleitschuh.gradle.ktlint") version "13.0.0"
+    kotlin("jvm") version "2.2.10"
+    kotlin("plugin.spring") version "2.2.10"
+    id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
 }
 
 // Specifies the usage of the currently newest version of Ktlint. `org.jlleitschuh.gradle.ktlint` version 12.2.0 is
@@ -37,17 +37,6 @@ sourceSets {
     }
 }
 
-configurations.all {
-    resolutionStrategy.eachDependency {
-        if (requested.group == "org.springframework" && requested.name == "spring-web" && requested.version == "6.2.7") {
-            useVersion("6.2.8") // Prøver å fikse sårbarheter i spring-boot-starter-web:3.5.0
-        }
-        if (requested.group == "org.apache.tomcat.embed" && requested.version == "10.1.41") {
-            useVersion("10.1.42")
-        }
-    }
-}
-
 // Shared dependency declaration for all test code
 val sharedTestImplementation: Configuration by configurations.register("sharedTestImplementation")
 val sharedTestRuntimeOnly: Configuration by configurations.register("sharedTestRuntimeOnly")
@@ -68,7 +57,7 @@ val smokeTestRuntimeOnly: Configuration by configurations.getting {
     extendsFrom(configurations.getByName("sharedTestRuntimeOnly"))
 }
 
-val springBootVersion = "3.5.4"
+val springBootVersion = "3.5.5"
 val fasterXmlJacksonVersion = "2.19.2"
 val testcontainersVersion = "1.21.3"
 val micrometerVersion = "1.15.3"
