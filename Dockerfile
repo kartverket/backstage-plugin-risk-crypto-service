@@ -3,7 +3,7 @@ ARG JRE_IMAGE=eclipse-temurin:24.0.2_12-jre-alpine-3.22
 ARG SOPS_BUILD_IMAGE=golang:1.24.6
 
 # Sops version that is targeted.
-ARG SOPS_VERSION_ARG=3.10.2
+ARG SOPS_VERSION_ARG=3.11.1
 # Set SOPS_TAG=main to use default branch (latest). Make sure SOPS_VERSION_ARG corresponds with Version in https://github.com/getsops/sops/blob/main/version/version.go
 # Set SOPS_TAG=v${SOPS_VERSION_ARG} to get tagged version
 ARG SOPS_TAG=v${SOPS_VERSION_ARG}
@@ -49,6 +49,9 @@ RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go install .
 
 ### Assemble runtime image ###
 FROM ${JRE_IMAGE}
+
+# Get security updates for Alpine packages
+RUN apk upgrade --no-cache
 
 # Add non-root user and set permissions.
 RUN mkdir /app /app/logs /app/tmp && \
