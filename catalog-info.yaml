@@ -1,12 +1,21 @@
-# nonk8s
-apiVersion: "backstage.io/v1alpha1"
-kind: "Component"
+apiVersion: backstage.io/v1alpha1
+kind: Component
 metadata:
-  name: "backstage-plugin-risk-crypto-service"
+  name: backstage-plugin-risk-crypto-service
   tags:
-  - "internal"
+    - internal
 spec:
-  type: "service"
-  lifecycle: "production"
-  owner: "skvis"
-  system: "ros-as-code"
+  type: service
+  lifecycle: production
+  owner: skvis
+  system: ros-as-code
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-risk-crypto-service-api
+spec:
+  type: openapi
+  owner: skvis
+  lifecycle: production
