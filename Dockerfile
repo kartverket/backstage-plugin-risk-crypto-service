@@ -50,6 +50,9 @@ RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go install .
 ### Assemble runtime image ###
 FROM ${JRE_IMAGE}
 
+# Get security updates for Alpine packages
+RUN apk upgrade --no-cache
+
 # Add non-root user and set permissions.
 RUN mkdir /app /app/logs /app/tmp && \
     adduser -D user && chown -R user:user /app /app/logs /app/tmp

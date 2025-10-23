@@ -66,8 +66,16 @@ val springMockkVersion = "4.0.2"
 val junitVersion = "6.0.0"
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
-    implementation("org.springframework.boot:spring-boot-starter-actuator:$springBootVersion")
+    implementation("org.springframework.boot:spring-boot-starter-web:$springBootVersion") {
+        exclude(group = "ch.qos.logback", module = "logback-core")
+        exclude(group = "ch.qos.logback", module = "logback-classic")
+    }
+    implementation("org.springframework.boot:spring-boot-starter-actuator:$springBootVersion") {
+        exclude(group = "ch.qos.logback", module = "logback-core")
+        exclude(group = "ch.qos.logback", module = "logback-classic")
+    }
+    implementation("ch.qos.logback:logback-core:1.5.19")
+    implementation("ch.qos.logback:logback-classic:1.5.19")
     implementation("io.micrometer:micrometer-registry-prometheus:$micrometerVersion") {
         because("Provides endpoints for health and event monitoring that are used in SKIP and Docker.")
     }
