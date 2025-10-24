@@ -2,7 +2,7 @@ plugins {
     id("org.springframework.boot") version "3.5.6"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("jvm") version "2.2.10"
-    kotlin("plugin.spring") version "2.2.10"
+    kotlin("plugin.spring") version "2.2.21"
     id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
 }
 
