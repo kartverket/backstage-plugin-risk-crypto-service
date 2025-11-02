@@ -1,8 +1,8 @@
 plugins {
-    id("org.springframework.boot") version "3.5.6"
+    id("org.springframework.boot") version "3.5.7"
     id("io.spring.dependency-management") version "1.1.7"
-    kotlin("jvm") version "2.2.10"
-    kotlin("plugin.spring") version "2.2.10"
+    kotlin("jvm") version "2.2.21"
+    kotlin("plugin.spring") version "2.2.21"
     id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
 }
 
@@ -57,8 +57,8 @@ val smokeTestRuntimeOnly: Configuration by configurations.getting {
     extendsFrom(configurations.getByName("sharedTestRuntimeOnly"))
 }
 
-val springBootVersion = "3.5.5"
-val fasterXmlJacksonVersion = "2.19.2"
+val springBootVersion = "3.5.7"
+val fasterXmlJacksonVersion = "2.20.1"
 val testcontainersVersion = "2.0.1"
 val micrometerVersion = "1.15.5"
 val mockkVersion = "1.14.6"
@@ -74,8 +74,8 @@ dependencies {
         exclude(group = "ch.qos.logback", module = "logback-core")
         exclude(group = "ch.qos.logback", module = "logback-classic")
     }
-    implementation("ch.qos.logback:logback-core:1.5.19")
-    implementation("ch.qos.logback:logback-classic:1.5.19")
+    implementation("ch.qos.logback:logback-core:1.5.20")
+    implementation("ch.qos.logback:logback-classic:1.5.20")
     implementation("io.micrometer:micrometer-registry-prometheus:$micrometerVersion") {
         because("Provides endpoints for health and event monitoring that are used in SKIP and Docker.")
     }
