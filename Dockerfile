@@ -1,82 +1,103 @@
-ARG JVM_BUILD_IMAGE=eclipse-temurin:24.0.2_12-jdk-alpine-3.22
-ARG JRE_IMAGE=eclipse-temurin:24.0.2_12-jre-alpine-3.22
-ARG SOPS_BUILD_IMAGE=golang:1.24.6
+# ---- Base images (Eclipse Temurin on UBI9 Minimal = fresher CVE profile) ----
+ARG JVM_BUILD_IMAGE=eclipse-temurin:24.0.2_12-jdk-ubi9-minimal
+ARG JRE_IMAGE=eclipse-temurin:24.0.2_12-jre-ubi9-minimal
+ARG SOPS_BUILD_IMAGE=golang:1.24-bookworm
 
 # Sops version that is targeted.
 ARG SOPS_VERSION_ARG=3.11.0
-# Set SOPS_TAG=main to use default branch (latest). Make sure SOPS_VERSION_ARG corresponds with Version in https://github.com/getsops/sops/blob/main/version/version.go
-# Set SOPS_TAG=v${SOPS_VERSION_ARG} to get tagged version
 ARG SOPS_TAG=v${SOPS_VERSION_ARG}
 
 ### Build app ###
 FROM ${JVM_BUILD_IMAGE} AS build
 
-# Get security updates
-RUN apk upgrade --no-cache
+USER root
+WORKDIR /build
 
-COPY . .
-RUN ./gradlew build -x test -x smokeTest --no-daemon -Dorg.gradle.jvmargs="-Xmx1024m"
+# xargs for your build
+RUN microdnf -y update && microdnf -y install findutils && microdnf clean all
 
-### Build Sops ###
+# Create a real home and make everything writable by the build user
+RUN useradd -m -d /home/appuser -r -u 10001 appuser && \
+    # make sure any cached /build content (incl. .kotlin) is owned & writable
+    chown -R 10001:0 /build /home/appuser && chmod -R g+rwX /build /home/appuser
+
+# Let Gradle & Kotlin use writable locations
+ENV HOME=/home/appuser \
+    GRADLE_USER_HOME=/home/appuser/.gradle \
+    KOTLIN_COMPILER_DATADIR=/home/appuser/.kotlin
+
+# Optional: cooperative umask so group-writable survives
+RUN printf 'umask 0002\n' >> /etc/profile
+
+USER 10001
+
+# Ensure sources arrive owned by appuser to avoid root-owned files
+COPY --chown=10001:0 . .
+
+# Create the dirs Kotlin/Gradle will use (in case the project cleans them)
+RUN mkdir -p "$GRADLE_USER_HOME" "$KOTLIN_COMPILER_DATADIR"
+
+ENV GRADLE_OPTS="-Dorg.gradle.jvmargs=-Xmx1024m"
+RUN ./gradlew --version >/dev/null && \
+    ./gradlew build -x test -x smokeTest --no-daemon
+
+# =============================== Build SOPS ==================================
 FROM --platform=$BUILDPLATFORM ${SOPS_BUILD_IMAGE} AS sops_build
 
 # Use ARGs from --platform
 ARG TARGETOS
 ARG TARGETARCH
-
-# Repeat ARG to use it locally
 ARG SOPS_TAG
-# Convert ARG to ENV to use in cmd
-ENV SOPS_BRANCH=${SOPS_TAG}
 
-# Set working directory inside the container
-WORKDIR /build
+# Minimal deps; keep layer clean
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends git ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
 
-# Install git
-RUN apt-get update && apt-get install -y --no-install-recommends git \
-    && rm -rf /var/lib/apt/lists/*
-
-# Clone the sops repository for selected branch/tag. Turn off warning for detached head, and skip history
+# Less noisy git, shallow clone
+WORKDIR /src
 RUN git config --global advice.detachedHead false && \
-    git clone --depth 1 --branch ${SOPS_BRANCH} https://github.com/getsops/sops.git
+    git clone --depth 1 --branch "${SOPS_TAG}" https://github.com/getsops/sops.git
 
-# Change working directory to sops source
-WORKDIR /build/sops/cmd/sops
+# Build static SOPS for the target platform
+WORKDIR /src/sops/cmd/sops
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
+    go build -trimpath -ldflags="-s -w" -o /out/sops .
+# ===================== Tiny wget just for HEALTHCHECK ========================
+FROM busybox:1.37.0-glibc AS bb
 
-# Build for selected arcitecure using go compiler.
-# CGO_ENABLED=0 means you got a statically linked binary, i.e. without any external dependencies
-RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go install .
-
-### Assemble runtime image ###
+# =============================== Runtime image ===============================
+# =============================== Runtime image ===============================
 FROM ${JRE_IMAGE}
 
-# Get security updates for Alpine packages
-RUN apk upgrade --no-cache
+ENV JAVA_TOOL_OPTIONS="-XX:+UseContainerSupport"
 
-# Add non-root user and set permissions.
-RUN mkdir /app /app/logs /app/tmp && \
-    adduser -D user && chown -R user:user /app /app/logs /app/tmp
+# Create runtime user & dirs
+USER root
+RUN useradd -r -u 10001 appuser && \
+    mkdir -p /app /app/logs /app/tmp && chown -R 10001:0 /app
 
-# Copy jars, remove *plain.jar, and rename runnable jar
-COPY --from=build /build/libs/*.jar /app/
-RUN rm /app/*-plain.jar && mv /app/*.jar /app/backend.jar
+# App jar: do as appuser
+USER 10001
+COPY --from=build /build/build/libs/*.jar /app/
+RUN sh -c 'set -e; for f in /app/*-plain.jar; do [ -e "$f" ] && rm -f "$f"; done; \
+           jar=$(echo /app/*.jar | awk "{print \$1}"); mv "$jar" /app/backend.jar'
 
-# Sops version is checked in the actuator/health endpoint in the app
-# The health check will fail if sops cannot be run, or has an unexpected version
-ARG SOPS_VERSION_ARG
-ENV SOPS_VERSION=${SOPS_VERSION_ARG}
+# ---- back to root to place binaries into /usr/bin ----
+USER root
 
-# Copy SOPS binary and set it as executable
-COPY --from=sops_build /go/bin/sops /usr/bin/sops
-RUN chmod +x /usr/bin/sops
+# SOPS: set perms during copy (no chmod later)
+COPY --from=sops_build --chown=root:root --chmod=0755 /out/sops /usr/bin/sops
 
-# Switch to non-root user.
-USER user
+# BusyBox wget for healthcheck: set perms during copy, then symlink
+COPY --from=bb --chown=root:root --chmod=0755 /bin/busybox /usr/bin/busybox
+RUN ln -sf /usr/bin/busybox /usr/bin/wget
 
-# Port 8081 for actuator endpoints
+# Drop privileges for runtime
+USER 10001
+
 EXPOSE 8080 8081
 ENTRYPOINT ["java", "-jar", "/app/backend.jar"]
 
-# Use the health endpoint of the application to provide information through docker about the health state of the application
-HEALTHCHECK --start-period=30s --interval=5m \
-   CMD wget -O - --quiet --tries=1 http://localhost:8083/actuator/health | grep UP || exit 1
+HEALTHCHECK --start-period=30s --interval=5m --timeout=10s \
+  CMD /usr/bin/wget -qO- http://localhost:8081/actuator/health | grep -q '"status":"UP"' || exit 1
