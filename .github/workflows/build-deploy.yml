@@ -98,7 +98,10 @@ jobs:
         run: docker run -d --name ${{ github.run_id }} -p 8081:8081 -p 8080:8080 -e SOPS_AGE_KEY=etc/bin -e SOPS_VERSION=3.11.0 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build-docker.outputs.digest }}
 
       - name: Wait for container
-        run: docker logs -f ${{ github.run_id }} | grep -q "Started CryptoServiceApplicationKt"
+        run: | 
+          while [ "$(docker inspect -f '{{.State.Running}}' ${{ github.run_id }})" != "true" ]; do
+            sleep 1
+          done
 
       - name: GET healthcheck with curl
         run: curl -X GET https://0.0.0.0/actuator/health > response.txt
