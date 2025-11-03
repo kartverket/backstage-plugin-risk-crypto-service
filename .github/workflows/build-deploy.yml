@@ -95,7 +95,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Start container
-        run:  docker run -d --name ${{ steps.build-docker.outputs.digest }} -p 8081:8081 -p 8080:8080 -e SOPS_AGE_KEY=etc/bin -e SOPS_VERSION=3.11.0 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build-docker.outputs.digest }}
+        run:  docker run -d --name ${{ github.run_id }} -p 8081:8081 -p 8080:8080 -e SOPS_AGE_KEY=etc/bin -e SOPS_VERSION=3.11.0 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build-docker.outputs.digest }}
 
       - name: GET healthcheck with curl
         run: |
@@ -103,7 +103,7 @@ jobs:
             https://0.0.0.0/actuator/health > response.txt
 
       - name: Stop container
-        run: docker stop ${{ steps.build-docker.outputs.digest }}
+        run: docker stop ${{ github.run_id }}
 
       - name: Set output with build values
         id: setOutput
