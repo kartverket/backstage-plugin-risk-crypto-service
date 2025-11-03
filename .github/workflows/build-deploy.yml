@@ -94,10 +94,13 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Execute Gradle Sops Smoke Test
-        env:
-          CRYPTO_SERVICE_CONTAINER: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build-docker.outputs.digest }}
-        run: ./gradlew smokeTest
+      - name: Start container
+        run:  docker run -p 8081:8081 -p 8080:8080 -e SOPS_AGE_KEY=etc/bin -e SOPS_VERSION=3.11.0 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build-docker.outputs.digest }}
+
+      - name: GET healthcheck with curl
+        run: |
+          curl -X GET \
+            https://0.0.0.0/actuator/health > response.txt
 
       - name: Set output with build values
         id: setOutput

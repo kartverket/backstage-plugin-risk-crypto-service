@@ -154,7 +154,7 @@ which eventually will end with
 
 Then run:
 ```bash
-docker run -p 8081:8081 -p 8080:8080 -e SOPS_AGE_KEY=etc/bin -e MANAGEMENT.ENDPOINT.HEALTH.SHOW-DETAILS=always <image id>
+docker run -p 8081:8081 -p 8080:8080 -e SOPS_VERSION=3.11.0 SOPS_AGE_KEY=etc/bin -e -e MANAGEMENT.ENDPOINT.HEALTH.SHOW-DETAILS=always <image id>
 ```
 The argument `-e MANAGEMENT.ENDPOINT.HEALTH.SHOW-DETAILS=always` will display details 
 when GETing `http://localhost:8081/actuator/health`. Can be useful if health is reported as DOWN.
