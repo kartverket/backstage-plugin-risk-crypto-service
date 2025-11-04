@@ -93,8 +93,7 @@ COPY --from=sops_build --chown=root:root --chmod=0755 /out/sops /usr/bin/sops
 COPY --from=bb --chown=root:root --chmod=0755 /bin/busybox /usr/bin/busybox
 RUN ln -sf /usr/bin/busybox /usr/bin/wget
 
-RUN microdnf remove -y tar
-
+RUN microdnf remove -y tar binutils binutils-gold && microdnf clean all
 
 # Drop privileges for runtime
 USER 10001
