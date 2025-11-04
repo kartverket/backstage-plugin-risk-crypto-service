@@ -1,7 +1,7 @@
 # ---- Base images (Eclipse Temurin on UBI9 Minimal = fresher CVE profile) ----
 ARG JVM_BUILD_IMAGE=eclipse-temurin:24.0.2_12-jdk-ubi9-minimal
 ARG JRE_IMAGE=eclipse-temurin:24.0.2_12-jre-ubi9-minimal
-ARG SOPS_BUILD_IMAGE=golang:1.24-bookworm
+ARG SOPS_BUILD_IMAGE=golang:1.25.3-bookworm
 
 # Sops version that is targeted.
 ARG SOPS_VERSION_ARG=3.11.0
