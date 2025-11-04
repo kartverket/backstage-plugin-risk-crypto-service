@@ -118,7 +118,13 @@ jobs:
           exit 1
 
       - name: GET healthcheck with curl
-        run: curl -X GET http://localhost:8081/actuator/health | tee response.txt
+        run: | 
+          response=$(curl -fsS http://localhost:8081/actuator/health)
+          if [ "$response" = "{\"status\":\"UP\"}" ]; then
+              echo "Status UP"; exit 0
+          elif
+              echo "Status DOWN"; exit 0
+          fi
 
       - name: Stop container
         if: always()
