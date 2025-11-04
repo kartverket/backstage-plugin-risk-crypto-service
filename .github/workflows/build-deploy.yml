@@ -104,15 +104,11 @@ jobs:
 
       - name: Wait for healthy
         run: |
+          set -euo pipefail
           for i in {1..30}; do
-            response=$(curl -fsS http://localhost:8081/actuator/health 2>/dev/null || echo "")
-            if [ "$response" = '{"status":"UP"}' ]; then
-              echo "✅ Status UP"
-              exit 0
-            else 
-              echo "Waiting for status UP"
-            fi
-            sleep 2
+          [ "$(curl -fsS http://localhost:8081/actuator/health || true)" = '{"status":"UP"}' ] && {
+              echo "✅ Status UP"; exit 0; }
+            echo "Waiting for status UP"; sleep 2
           done
           echo "❌ Container failed to become healthy"
           docker logs ${{ github.run_id }} || true
@@ -121,10 +117,6 @@ jobs:
       - name: Stop container
         if: always()
         run: docker stop ${{ github.run_id }} || true
-
-      - name: Dump logs on failure
-        if: failure()
-        run: docker logs ${{ github.run_id }} || true
 
       - name: Set output with build values
         id: setOutput

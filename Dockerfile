@@ -26,9 +26,6 @@ ENV HOME=/home/appuser \
     GRADLE_USER_HOME=/home/appuser/.gradle \
     KOTLIN_COMPILER_DATADIR=/home/appuser/.kotlin
 
-# Optional: cooperative umask so group-writable survives
-RUN printf 'umask 0002\n' >> /etc/profile
-
 USER 10001
 
 # Ensure sources arrive owned by appuser to avoid root-owned files
@@ -63,10 +60,10 @@ RUN git config --global advice.detachedHead false && \
 WORKDIR /src/sops/cmd/sops
 RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
     go build -trimpath -ldflags="-s -w" -o /out/sops .
-# ===================== Tiny wget just for HEALTHCHECK ========================
+
+ # ===================== Tiny wget just for HEALTHCHECK ========================
 FROM busybox:1.37.0-glibc AS bb
 
-# =============================== Runtime image ===============================
 # =============================== Runtime image ===============================
 FROM ${JRE_IMAGE}
 
@@ -80,9 +77,7 @@ RUN useradd -r -u 10001 appuser && \
 # App jar: do as appuser
 USER 10001
 COPY --from=build /build/build/libs/*.jar /app/
-RUN sh -c 'set -e; for f in /app/*-plain.jar; do [ -e "$f" ] && rm -f "$f"; done; \
-           jar=$(echo /app/*.jar | awk "{print \$1}"); mv "$jar" /app/backend.jar'
-
+RUN sh -c 'rm -f /app/*-plain.jar; mv /app/*.jar /app/backend.jar'
 # ---- back to root to place binaries into /usr/bin ----
 USER root
 
