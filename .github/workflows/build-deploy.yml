@@ -95,16 +95,38 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Start container
-        run: docker run -d --name ${{ github.run_id }} -p 8081:8081 -p 8080:8080 -e SOPS_AGE_KEY=etc/bin -e SOPS_VERSION=3.11.0 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build-docker.outputs.digest }}
+        run: |
+          docker run -d --rm \
+            --name ${{ github.run_id }} \
+            -p 8081:8081 -p 8080:8080 \
+            -e SOPS_AGE_KEY=etc/bin -e SOPS_VERSION=3.11.0 \
+            --health-cmd='curl -f http://localhost:8081/actuator/health || exit 1' \
+            --health-interval=5s --health-retries=12 --health-timeout=2s \
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build-docker.outputs.digest }}
 
-      - name: Wait for container
-        run: sleep 15
+      - name: Wait for healthy
+        run: |
+          for i in {1..60}; do
+            status=$(docker inspect --format='{{json .State.Health.Status}}' ${{ github.run_id }} 2>/dev/null || echo '"starting"')
+            if [ "$status" = "\"healthy\"" ]; then
+              echo "Container healthy"; exit 0
+            fi
+            sleep 2
+          done
+          echo "Container failed to become healthy"
+          docker logs ${{ github.run_id }} || true
+          exit 1
 
       - name: GET healthcheck with curl
-        run: curl -X GET https://127.0.0.1/actuator/health > response.txt
+        run: curl -X GET http://localhost:8081/actuator/health | tee response.txt
 
       - name: Stop container
-        run: docker stop ${{ github.run_id }}
+        if: always()
+        run: docker stop ${{ github.run_id }} || true
+
+      - name: Dump logs on failure
+        if: failure()
+        run: docker logs ${{ github.run_id }} || true
 
       - name: Set output with build values
         id: setOutput
