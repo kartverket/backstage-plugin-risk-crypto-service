@@ -3,7 +3,8 @@ ARG JVM_BUILD_IMAGE=eclipse-temurin:24.0.2_12-jdk-ubi9-minimal
 ARG JRE_IMAGE=eclipse-temurin:24.0.2_12-jre-ubi9-minimal
 ARG SOPS_BUILD_IMAGE=golang:1.25.3-bookworm
 
-# Sops version that is targeted.
+# Sops version is checked in the actuator/health endpoint in the app
+# The health check will fail if sops cannot be run, or has an unexpected version
 ARG SOPS_VERSION_ARG=3.11.0
 ARG SOPS_TAG=v${SOPS_VERSION_ARG}
 
@@ -68,18 +69,15 @@ FROM busybox:1.37.0-glibc AS bb
 FROM ${JRE_IMAGE}
 
 ENV JAVA_TOOL_OPTIONS="-XX:+UseContainerSupport"
+# Sops version is checked in the actuator/health endpoint in the app
+# The health check will fail if sops cannot be run, or has an unexpected version
+ARG SOPS_VERSION_ARG
+ENV SOPS_VERSION=${SOPS_VERSION_ARG}
 
 # Create runtime user & dirs
 USER root
 RUN useradd -r -u 10001 appuser && \
     mkdir -p /app /app/logs /app/tmp && chown -R 10001:0 /app
-
-# App jar: do as appuser
-USER 10001
-COPY --from=build /build/build/libs/*.jar /app/
-RUN sh -c 'rm -f /app/*-plain.jar; mv /app/*.jar /app/backend.jar'
-# ---- back to root to place binaries into /usr/bin ----
-USER root
 
 # SOPS: set perms during copy (no chmod later)
 COPY --from=sops_build --chown=root:root --chmod=0755 /out/sops /usr/bin/sops
@@ -90,8 +88,10 @@ RUN ln -sf /usr/bin/busybox /usr/bin/wget
 
 RUN microdnf remove -y tar binutils binutils-gold && microdnf clean all
 
-# Drop privileges for runtime
+# App jar: do as appuser
 USER 10001
+COPY --from=build /build/build/libs/*.jar /app/
+RUN sh -c 'rm -f /app/*-plain.jar; mv /app/*.jar /app/backend.jar'
 
 EXPOSE 8080 8081
 ENTRYPOINT ["java", "-jar", "/app/backend.jar"]

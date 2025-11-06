@@ -99,7 +99,7 @@ jobs:
           docker run -d --rm \
             --name ${{ github.run_id }} \
             -p 8081:8081 -p 8080:8080 \
-            -e SOPS_AGE_KEY=etc/bin -e SOPS_VERSION=3.11.0 \
+            -e SOPS_AGE_KEY=etc/bin \
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build-docker.outputs.digest }}
 
       - name: Wait for healthy
