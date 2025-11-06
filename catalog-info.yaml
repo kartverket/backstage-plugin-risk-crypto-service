@@ -11,13 +11,3 @@ spec:
   system: ros-as-code
   providesApis:
   - backstage-plugin-risk-crypto-service-api
----
-apiVersion: backstage.io/v1alpha1
-kind: API
-metadata:
-  name: backstage-plugin-risk-crypto-service-api
-spec:
-  type: openapi
-  owner: skvis
-  lifecycle: production
-  system: ros-as-code
