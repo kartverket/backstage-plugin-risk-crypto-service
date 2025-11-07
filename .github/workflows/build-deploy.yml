@@ -94,29 +94,10 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Start container
-        run: |
-          docker run -d --rm \
-            --name ${{ github.run_id }} \
-            -p 8081:8081 -p 8080:8080 \
-            -e SOPS_AGE_KEY=etc/bin \
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build-docker.outputs.digest }}
-
-      - name: Wait for healthy
-        run: |
-          set -euo pipefail
-          for i in {1..30}; do
-          [ "$(curl -fsS http://localhost:8081/actuator/health || true)" = '{"status":"UP"}' ] && {
-              echo "✅ Status UP"; exit 0; }
-            echo "Waiting for status UP"; sleep 2
-          done
-          echo "❌ Container failed to become healthy"
-          docker logs ${{ github.run_id }} || true
-          exit 1
-
-      - name: Stop container
-        if: always()
-        run: docker stop ${{ github.run_id }} || true
+      - name: Smoketest
+        uses: ./.github/actions/sops-smoketest
+        with:
+          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build-docker.outputs.digest }}
 
       - name: Set output with build values
         id: setOutput
