@@ -69,10 +69,10 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Execute Gradle Sops Smoke Test
-        env:
-          CRYPTO_SERVICE_CONTAINER: ${{ env.AR_URL }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-        run: ./gradlew smokeTest
+      - name: Run smoketest
+        uses: ./.github/actions/sops-smoketest
+        with:
+          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build-docker.outputs.digest }}
 
       - name: Run the Docker image
         run: |
