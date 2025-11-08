@@ -69,11 +69,10 @@ jobs:
         with:
           gradle-version: "8.14.3" # Quotes required to prevent YAML converting to number
 
-
-      - name: Execute Gradle Sops Smoke Test
-        env:
-          CRYPTO_SERVICE_CONTAINER: ${{ env.AR_URL }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-        run: ./gradlew smokeTest
+      - name: Run smoketest
+        uses: ./.github/actions/sops-smoketest
+        with:
+          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build-docker.outputs.digest }}
 
       - name: Push the Docker image to Google Artifact Registry if test passes
         run: docker push --all-tags ${{ env.AR_URL }}/${{ env.IMAGE_NAME }}

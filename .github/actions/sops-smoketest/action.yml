@@ -1,0 +1,35 @@
+name: action.yml
+inputs:
+  image:
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: Start container
+      shell: bash
+      run: |
+        docker run -d --rm \
+          --name ${{ github.run_id }} \
+          -p 8081:8081 -p 8080:8080 \
+          -e SOPS_AGE_KEY=etc/bin \
+          ${{ inputs.image }}
+
+    - name: Wait for healthy
+      shell: bash
+      run: |
+        set -euo pipefail
+        for i in {1..30}; do
+        [ "$(curl -fsS http://localhost:8081/actuator/health || true)" = '{"status":"UP"}' ] && {
+            echo "✅ Status UP"; exit 0; }
+          echo "Waiting for status UP"; sleep 2
+        done
+        echo "❌ Container failed to become healthy"
+        docker logs ${{ github.run_id }} || true
+        exit 1
+
+    - name: Stop container
+      shell: bash
+      if: always()
+      run: docker stop ${{ github.run_id }} || true
