@@ -74,8 +74,8 @@ dependencies {
         exclude(group = "ch.qos.logback", module = "logback-core")
         exclude(group = "ch.qos.logback", module = "logback-classic")
     }
-    implementation("ch.qos.logback:logback-core:1.5.20")
-    implementation("ch.qos.logback:logback-classic:1.5.20")
+    implementation("ch.qos.logback:logback-core:1.5.21")
+    implementation("ch.qos.logback:logback-classic:1.5.21")
     implementation("io.micrometer:micrometer-registry-prometheus:$micrometerVersion") {
         because("Provides endpoints for health and event monitoring that are used in SKIP and Docker.")
     }
