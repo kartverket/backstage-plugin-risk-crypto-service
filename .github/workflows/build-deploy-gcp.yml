@@ -5,19 +5,18 @@ on:
       - docker-compose.yaml
       - README**
       - .github/CODEOWNERS
-      - '.security/**'
-      - '.gitignore'
+      - ".security/**"
+      - ".gitignore"
     branches:
       - main
 
 env:
   IMAGE_NAME: ${{ github.repository }}
-  PROJECT_ID: 'spire-ros-5lmr'
-  AR_REPO_LOCATION: 'europe-north1'
-  AR_URL: 'europe-north1-docker.pkg.dev/spire-ros-5lmr/risc-plugin'
-  SERVICE_ACCOUNT: 'risc-plugin-github-actions@spire-ros-5lmr.iam.gserviceaccount.com'
-  WORKLOAD_IDENTITY_PROVIDER: 'projects/457384642040/locations/global/workloadIdentityPools/github-actions-pool/providers/github'
-
+  PROJECT_ID: "spire-ros-5lmr"
+  AR_REPO_LOCATION: "europe-north1"
+  AR_URL: "europe-north1-docker.pkg.dev/spire-ros-5lmr/risc-plugin"
+  SERVICE_ACCOUNT: "risc-plugin-github-actions@spire-ros-5lmr.iam.gserviceaccount.com"
+  WORKLOAD_IDENTITY_PROVIDER: "projects/457384642040/locations/global/workloadIdentityPools/github-actions-pool/providers/github"
 
 defaults:
   run:
@@ -25,18 +24,18 @@ defaults:
 
 jobs:
   push_to_ar:
-    name: 'Docker build and push to GCP'
+    name: "Docker build and push to GCP"
     permissions:
-      contents: 'read'
-      id-token: 'write'
+      contents: "read"
+      id-token: "write"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
       - id: auth
-        name: 'Authenticate to Google Cloud'
-        uses: 'google-github-actions/auth@v2'
+        name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v2"
         with:
           service_account: ${{ env.SERVICE_ACCOUNT }}
           workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
@@ -56,19 +55,18 @@ jobs:
           push: false
           load: true
           tags: |
-              ${{ env.AR_URL }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+            ${{ env.AR_URL }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
       - uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '24'
-          architecture: 'x64'
+          distribution: "temurin"
+          java-version: "24"
+          architecture: "x64"
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.14.3" # Quotes required to prevent YAML converting to number
-
 
       - name: Execute Gradle Sops Smoke Test
         env:
@@ -77,3 +75,14 @@ jobs:
 
       - name: Push the Docker image to Google Artifact Registry if test passes
         run: docker push --all-tags ${{ env.AR_URL }}/${{ env.IMAGE_NAME }}
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy risc-crypto \
+            --image="${{ env.AR_URL }}/${{ env.IMAGE_NAME }}:${{ github.sha }}" \
+            --region=europe-north1 \
+            --platform=managed \
+            --update-secrets=SOPS_AGE_KEY=sops-age-key:latest \
+            --update-secrets=SECURITY_TEAM_PUBLIC_KEY=security-team-public-key:latest \
+            --update-secrets=SECURITY_PLATFORM_PUBLIC_KEY=security-platform-public-key:latest \
+            --update-secrets=BACKEND_PUBLIC_KEY=backend-public-key:latest
