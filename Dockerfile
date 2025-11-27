@@ -79,6 +79,8 @@ USER root
 RUN useradd -r -u 10001 appuser && \
     mkdir -p /app /app/logs /app/tmp && chown -R 10001:0 /app
 
+RUN microdnf -y update && microdnf -y install findutils && microdnf clean all
+
 # SOPS: set perms during copy (no chmod later)
 COPY --from=sops_build --chown=root:root --chmod=0755 /out/sops /usr/bin/sops
 
