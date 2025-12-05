@@ -59,11 +59,12 @@ val smokeTestRuntimeOnly: Configuration by configurations.getting {
 
 val springBootVersion = "3.5.7"
 val fasterXmlJacksonVersion = "2.20.1"
-val testcontainersVersion = "2.0.1"
+val testcontainersVersion = "2.0.2"
 val micrometerVersion = "1.15.5"
 val mockkVersion = "1.14.6"
 val springMockkVersion = "4.0.2"
 val junitVersion = "6.0.0"
+val springdocVersion = "2.8.14"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web:$springBootVersion") {
@@ -79,6 +80,14 @@ dependencies {
     implementation("io.micrometer:micrometer-registry-prometheus:$micrometerVersion") {
         because("Provides endpoints for health and event monitoring that are used in SKIP and Docker.")
     }
+
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springdocVersion") {
+        because("Auto-generates OpenAPI 3.0 specification and provides Swagger UI for API documentation.")
+    }
+
+    // Override vulnerable transitive dependency from springdoc and testcontainers to mitigate CVE-2025-48924 - can probably be removed in a bit
+    implementation("org.apache.commons:commons-lang3:3.18.0")
+    smokeTestImplementation("org.apache.commons:commons-lang3:3.18.0")
 
     implementation("com.fasterxml.jackson:jackson-bom:$fasterXmlJacksonVersion") {
         because("The BOM provides correct versions for all FasterXML Jackson dependencies.")
