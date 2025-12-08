@@ -61,7 +61,7 @@ val springBootVersion = "3.5.7"
 val fasterXmlJacksonVersion = "2.20.1"
 val testcontainersVersion = "2.0.1"
 val micrometerVersion = "1.15.5"
-val mockkVersion = "1.14.6"
+val mockkVersion = "1.14.7"
 val springMockkVersion = "4.0.2"
 val junitVersion = "6.0.0"
 
