@@ -82,6 +82,7 @@ class EncryptionService {
                                 "shamir_threshold" to
                                     config.shamir_threshold,
                                 "key_groups" to keyGroups,
+                                "mac_only_encrypted" to true,
                             ),
                         ),
                 )
