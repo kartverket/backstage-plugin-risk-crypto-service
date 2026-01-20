@@ -58,12 +58,12 @@ val smokeTestRuntimeOnly: Configuration by configurations.getting {
 }
 
 val springBootVersion = "3.5.9"
-val fasterXmlJacksonVersion = "2.20.1"
-val testcontainersVersion = "2.0.2"
-val micrometerVersion = "1.15.5"
-val mockkVersion = "1.14.6"
+val fasterXmlJacksonVersion = "2.21.0"
+val testcontainersVersion = "2.0.3"
+val micrometerVersion = "1.16.2"
+val mockkVersion = "1.14.7"
 val springMockkVersion = "4.0.2"
-val junitVersion = "6.0.0"
+val junitVersion = "6.0.2"
 val springdocVersion = "2.8.14"
 
 dependencies {
