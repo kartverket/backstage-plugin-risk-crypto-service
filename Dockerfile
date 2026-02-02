@@ -1,6 +1,6 @@
 # ---- Base images (Eclipse Temurin on UBI9 Minimal = fresher CVE profile) ----
-ARG JVM_BUILD_IMAGE=eclipse-temurin:24.0.2_12-jdk-ubi9-minimal
-ARG JRE_IMAGE=eclipse-temurin:24.0.2_12-jre-ubi9-minimal
+ARG JVM_BUILD_IMAGE=eclipse-temurin:25.0.1_8-jdk-ubi10-minimal
+ARG JRE_IMAGE=eclipse-temurin:25.0.1_8-jre-ubi10-minimal
 ARG SOPS_BUILD_IMAGE=golang:1.25.3-bookworm
 
 # Sops version is checked in the actuator/health endpoint in the app
