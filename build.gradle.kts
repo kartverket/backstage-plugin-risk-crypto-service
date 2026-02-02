@@ -57,7 +57,7 @@ val smokeTestRuntimeOnly: Configuration by configurations.getting {
     extendsFrom(configurations.getByName("sharedTestRuntimeOnly"))
 }
 
-val springBootVersion = "3.5.7"
+val springBootVersion = "4.0.0"
 val fasterXmlJacksonVersion = "2.20.1"
 val testcontainersVersion = "2.0.2"
 val micrometerVersion = "1.15.5"
