@@ -1,9 +1,9 @@
 ARG JVM_BUILD_IMAGE=eclipse-temurin:23.0.2_7-jdk-alpine-3.21
 ARG JRE_IMAGE=eclipse-temurin:24.0.1_9-jre-alpine-3.21
-ARG SOPS_BUILD_IMAGE=golang:1.24.4
+ARG SOPS_BUILD_IMAGE=golang:1.25.7
 
 # Sops version that is targeted.
-ARG SOPS_VERSION_ARG=3.10.2
+ARG SOPS_VERSION_ARG=3.11.0
 # Set SOPS_TAG=main to use default branch (latest). Make sure SOPS_VERSION_ARG corresponds with Version in https://github.com/getsops/sops/blob/main/version/version.go
 # Set SOPS_TAG=v${SOPS_VERSION_ARG} to get tagged version
 ARG SOPS_TAG=v${SOPS_VERSION_ARG}
