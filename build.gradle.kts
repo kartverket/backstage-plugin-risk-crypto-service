@@ -1,12 +1,12 @@
 plugins {
-    id("org.springframework.boot") version "3.5.4"
+    id("org.springframework.boot") version "3.5.10"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("jvm") version "2.2.0"
-    kotlin("plugin.spring") version "2.2.0"
-    id("org.jlleitschuh.gradle.ktlint") version "13.0.0"
+    kotlin("plugin.spring") version "2.3.0"
+    id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
 }
 
-// Specifies the usage of the currently newest version of Ktlint. `org.jlleitschuh.gradle.ktlint` version 12.2.0 is
+// Specifies the usage of the currently newest version of Ktlint. `org.jlleitschuh.gradle.ktlint` version 14.0.1 is
 // not guaranteed to use the newest version available.
 ktlint {
     version.set("1.6.0")
@@ -68,11 +68,11 @@ val smokeTestRuntimeOnly: Configuration by configurations.getting {
     extendsFrom(configurations.getByName("sharedTestRuntimeOnly"))
 }
 
-val springBootVersion = "3.5.4"
-val fasterXmlJacksonVersion = "2.19.2"
+val springBootVersion = "3.5.10"
+val fasterXmlJacksonVersion = "2.19.4"
 val testcontainersVersion = "1.21.3"
-val micrometerVersion = "1.15.2"
-val mockkVersion = "1.14.5"
+val micrometerVersion = "1.15.8"
+val mockkVersion = "1.14.9"
 val springMockkVersion = "4.0.2"
 val junitVersion = "5.13.4"
 
