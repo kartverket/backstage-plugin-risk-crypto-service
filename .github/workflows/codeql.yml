@@ -60,12 +60,12 @@ jobs:
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
-        java-version: '23'
+        java-version: '24'
         architecture: 'x64'
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
       with:
-        gradle-version: "8.12" # Quotes required to prevent YAML converting to number
+        gradle-version: "8.14.3" # Quotes required to prevent YAML converting to number
 
     # Add any setup steps before running the `github/codeql-action/init` action.
     # This includes steps like installing compilers or runtimes (`actions/setup-node`

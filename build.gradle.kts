@@ -1,7 +1,7 @@
 plugins {
     id("org.springframework.boot") version "3.5.10"
     id("io.spring.dependency-management") version "1.1.7"
-    kotlin("jvm") version "2.2.0"
+    kotlin("jvm") version "2.2.21"
     kotlin("plugin.spring") version "2.2.21"
     id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
 }
@@ -17,7 +17,7 @@ version = "0.0.1-SNAPSHOT"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(23)
+        languageVersion = JavaLanguageVersion.of(24)
     }
 }
 
@@ -34,17 +34,6 @@ repositories {
 sourceSets {
     create("smokeTest") {
         kotlin.srcDirs("src/smokeTest/kotlin")
-    }
-}
-
-configurations.all {
-    resolutionStrategy.eachDependency {
-        if (requested.group == "org.springframework" && requested.name == "spring-web" && requested.version == "6.2.7") {
-            useVersion("6.2.8") // Prøver å fikse sårbarheter i spring-boot-starter-web:3.5.0
-        }
-        if (requested.group == "org.apache.tomcat.embed" && requested.version == "10.1.41") {
-            useVersion("10.1.42")
-        }
     }
 }
 
@@ -69,19 +58,36 @@ val smokeTestRuntimeOnly: Configuration by configurations.getting {
 }
 
 val springBootVersion = "3.5.10"
-val fasterXmlJacksonVersion = "2.19.4"
-val testcontainersVersion = "1.21.3"
+val fasterXmlJacksonVersion = "2.20.1"
+val testcontainersVersion = "2.0.2"
 val micrometerVersion = "1.15.8"
 val mockkVersion = "1.14.9"
 val springMockkVersion = "4.0.2"
-val junitVersion = "5.13.4"
+val junitVersion = "6.0.0"
+val springdocVersion = "2.8.14"
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
-    implementation("org.springframework.boot:spring-boot-starter-actuator:$springBootVersion")
+    implementation("org.springframework.boot:spring-boot-starter-web:$springBootVersion") {
+        exclude(group = "ch.qos.logback", module = "logback-core")
+        exclude(group = "ch.qos.logback", module = "logback-classic")
+    }
+    implementation("org.springframework.boot:spring-boot-starter-actuator:$springBootVersion") {
+        exclude(group = "ch.qos.logback", module = "logback-core")
+        exclude(group = "ch.qos.logback", module = "logback-classic")
+    }
+    implementation("ch.qos.logback:logback-core:1.5.20")
+    implementation("ch.qos.logback:logback-classic:1.5.20")
     implementation("io.micrometer:micrometer-registry-prometheus:$micrometerVersion") {
         because("Provides endpoints for health and event monitoring that are used in SKIP and Docker.")
     }
+
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springdocVersion") {
+        because("Auto-generates OpenAPI 3.0 specification and provides Swagger UI for API documentation.")
+    }
+
+    // Override vulnerable transitive dependency from springdoc and testcontainers to mitigate CVE-2025-48924 - can probably be removed in a bit
+    implementation("org.apache.commons:commons-lang3:3.18.0")
+    smokeTestImplementation("org.apache.commons:commons-lang3:3.18.0")
 
     implementation("com.fasterxml.jackson:jackson-bom:$fasterXmlJacksonVersion") {
         because("The BOM provides correct versions for all FasterXML Jackson dependencies.")
