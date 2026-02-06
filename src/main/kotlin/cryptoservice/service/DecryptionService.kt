@@ -45,6 +45,7 @@ class DecryptionService {
                 lastmodified = sopsConfig.lastmodified,
                 version = sopsConfig.version,
                 key_groups = emptyList(),
+                macOnlyEncrypted = sopsConfig.macOnlyEncrypted ?: true,
             )
         return cleanConfig
     }
