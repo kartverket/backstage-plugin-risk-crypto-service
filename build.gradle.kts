@@ -75,8 +75,8 @@ dependencies {
         exclude(group = "ch.qos.logback", module = "logback-core")
         exclude(group = "ch.qos.logback", module = "logback-classic")
     }
-    implementation("ch.qos.logback:logback-core:1.5.20")
-    implementation("ch.qos.logback:logback-classic:1.5.20")
+    implementation("ch.qos.logback:logback-core:1.5.25")
+    implementation("ch.qos.logback:logback-classic:1.5.25")
     implementation("io.micrometer:micrometer-registry-prometheus:$micrometerVersion") {
         because("Provides endpoints for health and event monitoring that are used in SKIP and Docker.")
     }
@@ -86,8 +86,8 @@ dependencies {
     }
 
     // Override vulnerable transitive dependency from springdoc and testcontainers to mitigate CVE-2025-48924 - can probably be removed in a bit
-    implementation("org.apache.commons:commons-lang3:3.18.0")
-    smokeTestImplementation("org.apache.commons:commons-lang3:3.18.0")
+    implementation("org.apache.commons:commons-lang3:3.20.0")
+    smokeTestImplementation("org.apache.commons:commons-lang3:3.20.0")
 
     implementation("com.fasterxml.jackson:jackson-bom:$fasterXmlJacksonVersion") {
         because("The BOM provides correct versions for all FasterXML Jackson dependencies.")
