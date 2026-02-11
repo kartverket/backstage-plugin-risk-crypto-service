@@ -1,8 +1,8 @@
 plugins {
     id("org.springframework.boot") version "3.5.10"
     id("io.spring.dependency-management") version "1.1.7"
-    kotlin("jvm") version "2.2.21"
-    kotlin("plugin.spring") version "2.2.21"
+    kotlin("jvm") version "2.3.0"
+    kotlin("plugin.spring") version "2.3.0"
     id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
 }
 
@@ -17,7 +17,7 @@ version = "0.0.1-SNAPSHOT"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(24)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 
@@ -58,12 +58,12 @@ val smokeTestRuntimeOnly: Configuration by configurations.getting {
 }
 
 val springBootVersion = "3.5.10"
-val fasterXmlJacksonVersion = "2.20.1"
-val testcontainersVersion = "2.0.2"
-val micrometerVersion = "1.15.8"
+val fasterXmlJacksonVersion = "2.21.0"
+val testcontainersVersion = "2.0.3"
+val micrometerVersion = "1.16.2"
 val mockkVersion = "1.14.9"
 val springMockkVersion = "4.0.2"
-val junitVersion = "6.0.0"
+val junitVersion = "6.0.2"
 val springdocVersion = "2.8.14"
 
 dependencies {
@@ -75,8 +75,8 @@ dependencies {
         exclude(group = "ch.qos.logback", module = "logback-core")
         exclude(group = "ch.qos.logback", module = "logback-classic")
     }
-    implementation("ch.qos.logback:logback-core:1.5.20")
-    implementation("ch.qos.logback:logback-classic:1.5.20")
+    implementation("ch.qos.logback:logback-core:1.5.25")
+    implementation("ch.qos.logback:logback-classic:1.5.25")
     implementation("io.micrometer:micrometer-registry-prometheus:$micrometerVersion") {
         because("Provides endpoints for health and event monitoring that are used in SKIP and Docker.")
     }
@@ -86,8 +86,8 @@ dependencies {
     }
 
     // Override vulnerable transitive dependency from springdoc and testcontainers to mitigate CVE-2025-48924 - can probably be removed in a bit
-    implementation("org.apache.commons:commons-lang3:3.18.0")
-    smokeTestImplementation("org.apache.commons:commons-lang3:3.18.0")
+    implementation("org.apache.commons:commons-lang3:3.20.0")
+    smokeTestImplementation("org.apache.commons:commons-lang3:3.20.0")
 
     implementation("com.fasterxml.jackson:jackson-bom:$fasterXmlJacksonVersion") {
         because("The BOM provides correct versions for all FasterXML Jackson dependencies.")
