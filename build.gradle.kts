@@ -1,5 +1,5 @@
 plugins {
-    id("org.springframework.boot") version "3.5.10"
+    id("org.springframework.boot") version "4.0.2"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("jvm") version "2.3.0"
     kotlin("plugin.spring") version "2.3.0"
@@ -57,7 +57,7 @@ val smokeTestRuntimeOnly: Configuration by configurations.getting {
     extendsFrom(configurations.getByName("sharedTestRuntimeOnly"))
 }
 
-val springBootVersion = "3.5.10"
+val springBootVersion = "4.0.2"
 val fasterXmlJacksonVersion = "2.21.0"
 val testcontainersVersion = "2.0.3"
 val micrometerVersion = "1.16.2"
@@ -71,6 +71,7 @@ dependencies {
         exclude(group = "ch.qos.logback", module = "logback-core")
         exclude(group = "ch.qos.logback", module = "logback-classic")
     }
+    implementation("org.springframework.boot:spring-boot-health:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-starter-actuator:$springBootVersion") {
         exclude(group = "ch.qos.logback", module = "logback-core")
         exclude(group = "ch.qos.logback", module = "logback-classic")
