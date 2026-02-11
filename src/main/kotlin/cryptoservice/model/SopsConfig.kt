@@ -15,6 +15,7 @@ data class SopsConfig(
     @JsonProperty("pgp") val pgp: List<Any>? = null,
     @JsonProperty("unencrypted_suffix") val unencrypted_suffix: String? = null,
     @JsonProperty("version") val version: String? = null,
+    @JsonProperty("mac_only_encrypted") val macOnlyEncrypted: Boolean? = null,
 )
 
 data class KeyGroup(
