@@ -81,6 +81,7 @@ dependencies {
     implementation("io.micrometer:micrometer-registry-prometheus:$micrometerVersion") {
         because("Provides endpoints for health and event monitoring that are used in SKIP and Docker.")
     }
+    implementation("org.springframework.boot:spring-boot-starter-webmvc-test")
 
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springdocVersion") {
         because("Auto-generates OpenAPI 3.0 specification and provides Swagger UI for API documentation.")
