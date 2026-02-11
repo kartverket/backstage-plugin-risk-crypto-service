@@ -6,6 +6,9 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
 }
 
+// Override the AssertJ version managed by Spring Boot to mitigate CVE-2026-24400
+ext["assertj.version"] = "3.27.7"
+
 // Specifies the usage of the currently newest version of Ktlint. `org.jlleitschuh.gradle.ktlint` version 14.0.1 is
 // not guaranteed to use the newest version available.
 ktlint {
@@ -100,7 +103,7 @@ dependencies {
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("com.ninja-squad:springmockk:$springMockkVersion")
 
-    sharedTestImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
+    sharedTestImplementation("org.springframework.boot:spring-boot-starter-test")
 
     platform("org.junit:junit-bom:$junitVersion") {
         because("The BOM (bill of materials) provides correct versions for all JUnit libraries used.")
