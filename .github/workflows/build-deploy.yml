@@ -106,10 +106,14 @@ jobs:
         run: |
           set -euo pipefail
           for i in {1..30}; do
-          [ "$(curl -fsS http://localhost:8081/actuator/health || true)" = '{"status":"UP"}' ] && {
-              echo "✅ Status UP"; exit 0; }
-            echo "Waiting for status UP"; sleep 2
-          done
+            STATUS="$(curl -fsS http://localhost:8081/actuator/health | jq -r '.status' 2>/dev/null || true)"
+            if [ "$STATUS" = "UP" ]; then
+              echo "✅ Status UP"
+              exit 0
+            fi
+            echo "Waiting for status UP (got: ${STATUS:-<no response>})"
+              sleep 2
+            done
           echo "❌ Container failed to become healthy"
           docker logs ${{ github.run_id }} || true
           exit 1

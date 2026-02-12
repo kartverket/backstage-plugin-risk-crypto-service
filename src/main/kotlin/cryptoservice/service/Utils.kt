@@ -26,13 +26,13 @@ object YamlUtils {
     val objectMapper =
         ObjectMapper(yamlFactory)
             .registerKotlinModule()
-            .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+            .setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL)
 
     inline fun <reified T> deSerialize(yamlString: String) = objectMapper.readValue(yamlString, T::class.java)
 
     fun <T> serialize(t: T) =
         ObjectMapper(yamlFactory.enable(YAMLGenerator.Feature.LITERAL_BLOCK_STYLE))
-            .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+            .setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL)
             .registerKotlinModule()
             .writeValueAsString(t)
 }
