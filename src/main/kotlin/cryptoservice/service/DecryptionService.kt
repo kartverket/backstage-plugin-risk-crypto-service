@@ -69,11 +69,11 @@ class DecryptionService {
     ): String =
         try {
             if (!CryptoValidation.isValidGCPToken(gcpAccessToken.value)) {
-                throw SOPSDecryptionException("Invalid GCP Token")
+                throw SOPSDecryptionException("Invalid GCP Token", errorCode = "INVALID_GCP_TOKEN")
             }
 
             if (!CryptoValidation.isValidAgeSecretKey(sopsAgeKey)) {
-                throw SOPSDecryptionException("Invalid age key")
+                throw SOPSDecryptionException("Invalid age key", errorCode = "INVALID_AGE_KEY")
             }
 
             processBuilder
@@ -96,9 +96,17 @@ class DecryptionService {
                     when (waitFor()) {
                         EXECUTION_STATUS_OK -> result
                         else -> {
+                            val errorCode =
+                                when {
+                                    result.contains("Failed to get the data key", ignoreCase = true) -> "MISSING_DATA_KEY"
+                                    result.contains("no key could decrypt", ignoreCase = true) -> "NO_MATCHING_KEY"
+                                    result.contains("authentication failed", ignoreCase = true) -> "AUTHENTICATION_FAILED"
+                                    result.contains("could not authenticate", ignoreCase = true) -> "AUTHENTICATION_FAILED"
+                                    else -> "DECRYPTION_FAILED"
+                                }
                             throw SOPSDecryptionException(
-                                message =
-                                    "Decrypting message failed with error: $result",
+                                message = result,
+                                errorCode = errorCode,
                             )
                         }
                     }
