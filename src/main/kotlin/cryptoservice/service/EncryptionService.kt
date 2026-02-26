@@ -91,16 +91,21 @@ class EncryptionService {
         tempConfigFile.writeText(yamlMapper.writeValueAsString(sopsConfig))
         tempConfigFile.deleteOnExit()
 
+        // Set the access token in the environment rather than interpolating it into a shell command
+        val environment = processBuilder.environment()
+        environment["GOOGLE_OAUTH_ACCESS_TOKEN"] = gcpAccessToken.value
+
         return processBuilder
             .command(
-                "sh",
-                "-c",
-                "GOOGLE_OAUTH_ACCESS_TOKEN=${gcpAccessToken.value} " +
-                    "sops --encrypt " +
-                    "--input-type json " +
-                    "--output-type yaml " +
-                    "--config ${tempConfigFile.absolutePath} " +
-                    "/dev/stdin",
+                "sops",
+                "--encrypt",
+                "--input-type",
+                "json",
+                "--output-type",
+                "yaml",
+                "--config",
+                tempConfigFile.absolutePath,
+                "/dev/stdin",
             ).start()
             .run {
                 outputStream.buffered().also { it.write(text.toByteArray()) }.close()
