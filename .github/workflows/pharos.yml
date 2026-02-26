@@ -1,0 +1,27 @@
+name: Pharos vulnerability scan
+
+on:
+  schedule:
+    - cron: "0 6 * * 1-5" # Kjører kl. 06:00 UTC (07:00 CET / 08:00 CEST) hver hverdag
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  IMAGE: ghcr.io/${{ github.repository }}:latest
+
+jobs:
+  pharos:
+    name: Run Pharos on docker image
+    permissions:
+      actions: read
+      packages: read
+      contents: read
+      security-events: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Run Pharos"
+        uses: kartverket/pharos@v0.6.0
+        with:
+          image_url: ${{ env.IMAGE }}
