@@ -72,13 +72,20 @@ class DecryptionService {
             throw SOPSDecryptionException("Invalid age key")
         }
 
+        val environment = processBuilder.environment()
+        environment["SOPS_AGE_KEY"] = sopsAgeKey
+        environment["GOOGLE_OAUTH_ACCESS_TOKEN"] = gcpAccessToken.value
+
         return processBuilder
             .command(
                 listOf(
-                    "sh",
-                    "-c",
-                    "SOPS_AGE_KEY=$sopsAgeKey GOOGLE_OAUTH_ACCESS_TOKEN=${gcpAccessToken.value} " +
-                        "sops decrypt --input-type yaml --output-type json /dev/stdin",
+                    "sops",
+                    "decrypt",
+                    "--input-type",
+                    "yaml",
+                    "--output-type",
+                    "json",
+                    "/dev/stdin",
                 ),
             ).start()
             .run {
