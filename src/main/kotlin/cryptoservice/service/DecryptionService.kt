@@ -22,7 +22,7 @@ class DecryptionService {
         val rootNode = YamlUtils.objectMapper.readTree(ciphertext)
         val sopsNode =
             rootNode.get("sops")
-                ?: throw IllegalArgumentException(
+                ?: throw SOPSDecryptionException(
                     "No sops configuration found in ciphertext",
                 )
         val sopsConfig =
@@ -53,65 +53,66 @@ class DecryptionService {
         ciphertext: String,
         gcpAccessToken: GCPAccessToken,
         sopsAgeKey: String,
-    ): RiScWithConfig =
-        try {
-            val sopsConfig = extractSopsConfig(ciphertext)
-            val plaintext = decrypt(ciphertext, gcpAccessToken, sopsAgeKey)
-            RiScWithConfig(plaintext, sopsConfig)
-        } catch (e: Exception) {
-            throw e
-        }
+    ): RiScWithConfig {
+        val sopsConfig = extractSopsConfig(ciphertext)
+        val plaintext = decrypt(ciphertext, gcpAccessToken, sopsAgeKey)
+        return RiScWithConfig(plaintext, sopsConfig)
+    }
 
     fun decrypt(
         ciphertext: String,
         gcpAccessToken: GCPAccessToken,
         sopsAgeKey: String,
-    ): String =
-        try {
-            if (!CryptoValidation.isValidGCPToken(gcpAccessToken.value)) {
-                throw SOPSDecryptionException("Invalid GCP Token", errorCode = "INVALID_GCP_TOKEN")
-            }
+    ): String {
+        if (!CryptoValidation.isValidGCPToken(gcpAccessToken.value)) {
+            throw SOPSDecryptionException("Invalid GCP Token")
+        }
 
-            if (!CryptoValidation.isValidAgeSecretKey(sopsAgeKey)) {
-                throw SOPSDecryptionException("Invalid age key", errorCode = "INVALID_AGE_KEY")
-            }
+        if (!CryptoValidation.isValidAgeSecretKey(sopsAgeKey)) {
+            throw SOPSDecryptionException("Invalid age key")
+        }
 
-            processBuilder
-                .command(
-                    listOf(
-                        "sh",
-                        "-c",
-                        "SOPS_AGE_KEY=$sopsAgeKey GOOGLE_OAUTH_ACCESS_TOKEN=${gcpAccessToken.value} " +
-                            "sops decrypt --input-type yaml --output-type json /dev/stdin",
-                    ),
-                ).start()
-                .run {
-                    outputStream
-                        .buffered()
-                        .also { it.write(ciphertext.toByteArray()) }
-                        .close()
-                    val result =
-                        BufferedReader(InputStreamReader(inputStream))
-                            .readText()
-                    when (waitFor()) {
-                        EXECUTION_STATUS_OK -> result
-                        else -> {
-                            val errorCode =
-                                when {
-                                    result.contains("Failed to get the data key", ignoreCase = true) -> "MISSING_DATA_KEY"
-                                    result.contains("no key could decrypt", ignoreCase = true) -> "NO_MATCHING_KEY"
-                                    result.contains("authentication failed", ignoreCase = true) -> "AUTHENTICATION_FAILED"
-                                    result.contains("could not authenticate", ignoreCase = true) -> "AUTHENTICATION_FAILED"
-                                    else -> "DECRYPTION_FAILED"
-                                }
-                            throw SOPSDecryptionException(
-                                message = result,
-                                errorCode = errorCode,
-                            )
-                        }
+        val environment = processBuilder.environment()
+        environment["SOPS_AGE_KEY"] = sopsAgeKey
+        environment["GOOGLE_OAUTH_ACCESS_TOKEN"] = gcpAccessToken.value
+
+        return processBuilder
+            .command(
+                listOf(
+                    "sops",
+                    "decrypt",
+                    "--input-type",
+                    "yaml",
+                    "--output-type",
+                    "json",
+                    "/dev/stdin",
+                ),
+            ).start()
+            .run {
+                outputStream
+                    .buffered()
+                    .also { it.write(ciphertext.toByteArray()) }
+                    .close()
+                val result =
+                    BufferedReader(InputStreamReader(inputStream))
+                        .readText()
+                when (waitFor()) {
+                    EXECUTION_STATUS_OK -> result
+                    else -> {
+                        val errorCode =
+                            when {
+                                result.contains("Failed to get the data key", ignoreCase = true) -> "MISSING_DATA_KEY"
+                                result.contains("no key could decrypt", ignoreCase = true) -> "NO_MATCHING_KEY"
+                                result.contains("authentication failed", ignoreCase = true) -> "AUTHENTICATION_FAILED"
+                                result.contains("could not authenticate", ignoreCase = true) -> "AUTHENTICATION_FAILED"
+                                else -> "DECRYPTION_FAILED"
+                            }
+                        throw SOPSDecryptionException(
+                            message = result,
+                            errorCode = errorCode,
+                        )
                     }
                 }
-        } catch (e: Exception) {
-            throw e
-        }
+            }
+    }
 }

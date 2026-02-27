@@ -1,5 +1,6 @@
 package cryptoservice.service
 
+import cryptoservice.exception.exceptions.SOPSDecryptionException
 import cryptoservice.model.GCPAccessToken
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
@@ -271,9 +272,9 @@ class DecryptionServiceTest {
     }
 
     @Test
-    fun `extractSopsConfig should throw IllegalArgumentException when sops section is missing`() {
+    fun `extractSopsConfig should throw SOPSDecryptionException when sops section is missing`() {
         val ciphertextWithoutSops = "schemaVersion: v1\ntitle: test"
-        assertThrows<IllegalArgumentException> {
+        assertThrows<SOPSDecryptionException> {
             decryptionService.extractSopsConfig(ciphertextWithoutSops)
         }
     }

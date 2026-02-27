@@ -1,10 +1,13 @@
 plugins {
-    id("org.springframework.boot") version "3.5.10"
+    id("org.springframework.boot") version "4.0.2"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("jvm") version "2.3.0"
     kotlin("plugin.spring") version "2.3.0"
     id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
 }
+
+// Override the AssertJ version managed by Spring Boot to mitigate CVE-2026-24400
+ext["assertj.version"] = "3.27.7"
 
 // Specifies the usage of the currently newest version of Ktlint. `org.jlleitschuh.gradle.ktlint` version 14.0.1 is
 // not guaranteed to use the newest version available.
@@ -57,7 +60,7 @@ val smokeTestRuntimeOnly: Configuration by configurations.getting {
     extendsFrom(configurations.getByName("sharedTestRuntimeOnly"))
 }
 
-val springBootVersion = "3.5.10"
+val springBootVersion = "4.0.2"
 val fasterXmlJacksonVersion = "2.21.0"
 val testcontainersVersion = "2.0.3"
 val micrometerVersion = "1.16.2"
@@ -71,6 +74,7 @@ dependencies {
         exclude(group = "ch.qos.logback", module = "logback-core")
         exclude(group = "ch.qos.logback", module = "logback-classic")
     }
+    implementation("org.springframework.boot:spring-boot-health:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-starter-actuator:$springBootVersion") {
         exclude(group = "ch.qos.logback", module = "logback-core")
         exclude(group = "ch.qos.logback", module = "logback-classic")
@@ -80,6 +84,7 @@ dependencies {
     implementation("io.micrometer:micrometer-registry-prometheus:$micrometerVersion") {
         because("Provides endpoints for health and event monitoring that are used in SKIP and Docker.")
     }
+    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
 
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springdocVersion") {
         because("Auto-generates OpenAPI 3.0 specification and provides Swagger UI for API documentation.")
@@ -98,7 +103,7 @@ dependencies {
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("com.ninja-squad:springmockk:$springMockkVersion")
 
-    sharedTestImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
+    sharedTestImplementation("org.springframework.boot:spring-boot-starter-test")
 
     platform("org.junit:junit-bom:$junitVersion") {
         because("The BOM (bill of materials) provides correct versions for all JUnit libraries used.")
