@@ -22,7 +22,7 @@ class DecryptionService {
         val rootNode = YamlUtils.objectMapper.readTree(ciphertext)
         val sopsNode =
             rootNode.get("sops")
-                ?: throw IllegalArgumentException(
+                ?: throw SOPSDecryptionException(
                     "No sops configuration found in ciphertext",
                 )
         val sopsConfig =
@@ -53,57 +53,58 @@ class DecryptionService {
         ciphertext: String,
         gcpAccessToken: GCPAccessToken,
         sopsAgeKey: String,
-    ): RiScWithConfig =
-        try {
-            val sopsConfig = extractSopsConfig(ciphertext)
-            val plaintext = decrypt(ciphertext, gcpAccessToken, sopsAgeKey)
-            RiScWithConfig(plaintext, sopsConfig)
-        } catch (e: Exception) {
-            throw e
-        }
+    ): RiScWithConfig {
+        val sopsConfig = extractSopsConfig(ciphertext)
+        val plaintext = decrypt(ciphertext, gcpAccessToken, sopsAgeKey)
+        return RiScWithConfig(plaintext, sopsConfig)
+    }
 
     fun decrypt(
         ciphertext: String,
         gcpAccessToken: GCPAccessToken,
         sopsAgeKey: String,
-    ): String =
-        try {
-            if (!CryptoValidation.isValidGCPToken(gcpAccessToken.value)) {
-                throw SOPSDecryptionException("Invalid GCP Token")
-            }
+    ): String {
+        if (!CryptoValidation.isValidGCPToken(gcpAccessToken.value)) {
+            throw SOPSDecryptionException("Invalid GCP Token")
+        }
 
-            if (!CryptoValidation.isValidAgeSecretKey(sopsAgeKey)) {
-                throw SOPSDecryptionException("Invalid age key")
-            }
+        if (!CryptoValidation.isValidAgeSecretKey(sopsAgeKey)) {
+            throw SOPSDecryptionException("Invalid age key")
+        }
 
-            processBuilder
-                .command(
-                    listOf(
-                        "sh",
-                        "-c",
-                        "SOPS_AGE_KEY=$sopsAgeKey GOOGLE_OAUTH_ACCESS_TOKEN=${gcpAccessToken.value} " +
-                            "sops decrypt --input-type yaml --output-type json /dev/stdin",
-                    ),
-                ).start()
-                .run {
-                    outputStream
-                        .buffered()
-                        .also { it.write(ciphertext.toByteArray()) }
-                        .close()
-                    val result =
-                        BufferedReader(InputStreamReader(inputStream))
-                            .readText()
-                    when (waitFor()) {
-                        EXECUTION_STATUS_OK -> result
-                        else -> {
-                            throw SOPSDecryptionException(
-                                message =
-                                    "Decrypting message failed with error: $result",
-                            )
-                        }
+        val environment = processBuilder.environment()
+        environment["SOPS_AGE_KEY"] = sopsAgeKey
+        environment["GOOGLE_OAUTH_ACCESS_TOKEN"] = gcpAccessToken.value
+
+        return processBuilder
+            .command(
+                listOf(
+                    "sops",
+                    "decrypt",
+                    "--input-type",
+                    "yaml",
+                    "--output-type",
+                    "json",
+                    "/dev/stdin",
+                ),
+            ).start()
+            .run {
+                outputStream
+                    .buffered()
+                    .also { it.write(ciphertext.toByteArray()) }
+                    .close()
+                val result =
+                    BufferedReader(InputStreamReader(inputStream))
+                        .readText()
+                when (waitFor()) {
+                    EXECUTION_STATUS_OK -> result
+                    else -> {
+                        throw SOPSDecryptionException(
+                            message =
+                                "Decrypting message failed with error: $result",
+                        )
                     }
                 }
-        } catch (e: Exception) {
-            throw e
-        }
+            }
+    }
 }
